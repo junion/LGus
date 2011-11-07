@@ -1,0 +1,17 @@
+* { margin: 0; padding: 0; }
+body { font-family: 'Helvetica Neue', Helvetica, Arial, Tahoma, Verdana, sans-serif; color: #222; }
+
+#container { width: 300px; margin: 50px auto; }
+
+#message { margin: 7px; padding: 10px; display: none; }
+#message.error { border: 1px solid #ee3d26; background-color: #eb9388; }
+#message.success { border: 1px solid #a5bf49; background-color: #c7d692; }
+
+#message form label { font-size: 1.1em; margin-left: 5px; }
+#mainform label { display: block; margin-bottom: 3px; font-size: 1.1em; }
+
+#mainform input { display: block; margin-bottom: 15px; }
+input[type="text"], input[type="password"] { padding: 4px; font-size: 15px; width: 100%; height: 18px; }
+input[type="submit"] { float: right; }
+
+#mainform h2 { clear: right; font-weight: normal; font-size: 1.2em; text-align: center; padding-bottom: 2px; border-bottom: 1px solid #ccc; padding-top: 15px; margin-bottom: 9px; }

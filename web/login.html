@@ -1,0 +1,27 @@
+<html> 
+	<body> 
+		<form method=post action=do_login id=mainform> 
+			<center> 
+			<table> 
+				<tr> 
+				  <td></td> 
+				  <td>{$error_msg}</td> 
+				</tr> 
+				<tr> 
+					<td><label for="username">Username</label></td> 
+					<td><input type=text class='TextField' name=username value='{$username}'></td> 
+				</tr> 
+				<tr> 
+					<td><label for="password">Password</label></td> 
+					<td><input type=password class=TextField name=password></td> 
+				</tr> 
+				<tr> 
+					<td></td> 
+					<td><input type=submit value=Login>  <a href="register">New user</a></td> 
+				</tr> 
+			</table> 
+			</center> 
+		</form> 
+	</body> 
+</html> 
+

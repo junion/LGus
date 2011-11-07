@@ -1,0 +1,684 @@
+[20/Oct/2011:12:01:11] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:12:01:11] ENGINE Bus STARTING
+[20/Oct/2011:12:01:11] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:12:01:11] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:12:01:11] ENGINE Bus STARTED
+[20/Oct/2011:12:03:20] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:12:03:20] ENGINE Bus STARTING
+[20/Oct/2011:12:03:20] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:12:03:20] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:12:03:20] ENGINE Bus STARTED
+[20/Oct/2011:12:13:08] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:12:13:08] ENGINE Bus STARTING
+[20/Oct/2011:12:13:08] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:12:13:08] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:12:13:08] ENGINE Bus STARTED
+[20/Oct/2011:12:19:40] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:12:19:40] ENGINE Bus STARTING
+[20/Oct/2011:12:19:40] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:12:19:40] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:12:19:40] ENGINE Bus STARTED
+[20/Oct/2011:12:21:01] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:12:21:01] ENGINE Bus STARTING
+[20/Oct/2011:12:21:01] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:12:21:01] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:12:21:01] ENGINE Bus STARTED
+[20/Oct/2011:12:22:32] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:12:22:32] ENGINE Bus STARTING
+[20/Oct/2011:12:22:32] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:12:22:32] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:12:22:32] ENGINE Bus STARTED
+[20/Oct/2011:12:59:49] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:12:59:49] ENGINE Bus STARTING
+[20/Oct/2011:12:59:49] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:12:59:49] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:12:59:49] ENGINE Bus STARTED
+[20/Oct/2011:13:00:10] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:13:00:10] ENGINE Bus STARTING
+[20/Oct/2011:13:00:10] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:13:00:10] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:13:00:10] ENGINE Bus STARTED
+[20/Oct/2011:13:23:52] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:13:23:52] ENGINE Bus STARTING
+[20/Oct/2011:13:23:52] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:13:23:52] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:13:23:52] ENGINE Bus STARTED
+[20/Oct/2011:13:39:12] HTTP Traceback (most recent call last):
+  File "C:\Python26\lib\site-packages\cherrypy\_cprequest.py", line 645, in respond
+    response.body = self.handler()
+  File "C:\Python26\lib\site-packages\cherrypy\lib\encoding.py", line 188, in __call__
+    self.body = self.oldhandler(*args, **kwargs)
+  File "C:\Python26\lib\site-packages\cherrypy\_cpdispatch.py", line 29, in __call__
+    return self.callable(*self.args, **self.kwargs)
+  File "E:\Development\Letsgo_UserSim\LetsgoWebService.py", line 51, in get_usr_act
+    usr_acts,cs = self.simulator.get_usr_act(sys_act)
+  File "E:\Development\Letsgo_UserSim\LetsgoSimulator.py", line 198, in get_usr_act
+    ua_pt,ua = self.int_sim.get_intention(self.sys_act_ins2abs(sys_act))
+  File "E:\Development\Letsgo_UserSim\LetsgoSimulator.py", line 171, in sys_act_ins2abs
+    act,field,value = sys_act.split(':')
+AttributeError: 'NoneType' object has no attribute 'split'
+
+[20/Oct/2011:13:41:31] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:13:41:31] ENGINE Bus STARTING
+[20/Oct/2011:13:41:31] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:13:41:31] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:13:41:31] ENGINE Bus STARTED
+[20/Oct/2011:14:23:39] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:14:23:39] ENGINE Bus STARTING
+[20/Oct/2011:14:23:39] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:14:23:39] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:14:23:39] ENGINE Bus STARTED
+[20/Oct/2011:14:24:10] HTTP Traceback (most recent call last):
+  File "C:\Python26\lib\site-packages\cherrypy\_cprequest.py", line 645, in respond
+    response.body = self.handler()
+  File "C:\Python26\lib\site-packages\cherrypy\lib\encoding.py", line 188, in __call__
+    self.body = self.oldhandler(*args, **kwargs)
+  File "C:\Python26\lib\site-packages\cherrypy\_cpdispatch.py", line 29, in __call__
+    return self.callable(*self.args, **self.kwargs)
+  File "E:\Development\Letsgo_UserSim\LetsgoWebService.py", line 209, in POST
+    user_accounts = pickle.load(open('web/users/accounts','rb'))
+IOError: [Errno 2] No such file or directory: 'web/users/accounts'
+
+[20/Oct/2011:14:25:04] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:14:25:04] ENGINE Bus STARTING
+[20/Oct/2011:14:25:04] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:14:25:04] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:14:25:04] ENGINE Bus STARTED
+[20/Oct/2011:14:26:04] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:14:26:04] ENGINE Bus STARTING
+[20/Oct/2011:14:26:04] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:14:26:04] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:14:26:04] ENGINE Bus STARTED
+[20/Oct/2011:14:26:18] HTTP Traceback (most recent call last):
+  File "C:\Python26\lib\site-packages\cherrypy\_cprequest.py", line 645, in respond
+    response.body = self.handler()
+  File "C:\Python26\lib\site-packages\cherrypy\lib\encoding.py", line 188, in __call__
+    self.body = self.oldhandler(*args, **kwargs)
+  File "C:\Python26\lib\site-packages\cherrypy\_cpdispatch.py", line 29, in __call__
+    return self.callable(*self.args, **self.kwargs)
+  File "E:\Development\Letsgo_UserSim\LetsgoWebService.py", line 239, in POST
+    if not user_accounts[username][password] == hashlib.new(password).hexdigest():
+KeyError: u'w1dPtnsla'
+
+[20/Oct/2011:14:26:57] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:14:26:57] ENGINE Bus STARTING
+[20/Oct/2011:14:26:57] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:14:26:57] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:14:26:57] ENGINE Bus STARTED
+[20/Oct/2011:14:27:04] HTTP Traceback (most recent call last):
+  File "C:\Python26\lib\site-packages\cherrypy\_cprequest.py", line 645, in respond
+    response.body = self.handler()
+  File "C:\Python26\lib\site-packages\cherrypy\lib\encoding.py", line 188, in __call__
+    self.body = self.oldhandler(*args, **kwargs)
+  File "C:\Python26\lib\site-packages\cherrypy\_cpdispatch.py", line 29, in __call__
+    return self.callable(*self.args, **self.kwargs)
+  File "E:\Development\Letsgo_UserSim\LetsgoWebService.py", line 239, in POST
+    if not user_accounts[username]['password'] == hashlib.new(password).hexdigest():
+UnboundLocalError: local variable 'hashlib' referenced before assignment
+
+[20/Oct/2011:14:27:41] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:14:27:41] ENGINE Bus STARTING
+[20/Oct/2011:14:27:41] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:14:27:41] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:14:27:41] ENGINE Bus STARTED
+[20/Oct/2011:14:27:50] HTTP Traceback (most recent call last):
+  File "C:\Python26\lib\site-packages\cherrypy\_cprequest.py", line 645, in respond
+    response.body = self.handler()
+  File "C:\Python26\lib\site-packages\cherrypy\lib\encoding.py", line 188, in __call__
+    self.body = self.oldhandler(*args, **kwargs)
+  File "C:\Python26\lib\site-packages\cherrypy\_cpdispatch.py", line 29, in __call__
+    return self.callable(*self.args, **self.kwargs)
+  File "E:\Development\Letsgo_UserSim\LetsgoWebService.py", line 238, in POST
+    if not user_accounts[username]['password'] == hashlib.new(password).hexdigest():
+  File "C:\Python26\lib\hashlib.py", line 101, in __hash_new
+    return __get_builtin_constructor(name)(string)
+  File "C:\Python26\lib\hashlib.py", line 80, in __get_builtin_constructor
+    raise ValueError, "unsupported hash type"
+ValueError: unsupported hash type
+
+[20/Oct/2011:14:30:13] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:14:30:13] ENGINE Bus STARTING
+[20/Oct/2011:14:30:13] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:14:30:13] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:14:30:13] ENGINE Bus STARTED
+[20/Oct/2011:14:33:06] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:14:33:06] ENGINE Bus STARTING
+[20/Oct/2011:14:33:06] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:14:33:06] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:14:33:06] ENGINE Bus STARTED
+[20/Oct/2011:14:36:23] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:14:36:23] ENGINE Bus STARTING
+[20/Oct/2011:14:36:23] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:14:36:23] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:14:36:23] ENGINE Bus STARTED
+[20/Oct/2011:14:51:04] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:14:51:04] ENGINE Bus STARTING
+[20/Oct/2011:14:51:04] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:14:51:04] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:14:51:04] ENGINE Bus STARTED
+[20/Oct/2011:14:52:11] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:14:52:11] ENGINE Bus STARTING
+[20/Oct/2011:14:52:11] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:14:52:11] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:14:52:11] ENGINE Bus STARTED
+[20/Oct/2011:15:26:35] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:15:26:35] ENGINE Bus STARTING
+[20/Oct/2011:15:26:35] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:15:26:35] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:15:26:35] ENGINE Bus STARTED
+[20/Oct/2011:15:27:41] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:15:27:41] ENGINE Bus STARTING
+[20/Oct/2011:15:27:41] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:15:27:41] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:15:27:41] ENGINE Bus STARTED
+[20/Oct/2011:15:29:43] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:15:29:43] ENGINE Bus STARTING
+[20/Oct/2011:15:29:43] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:15:29:43] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:15:29:43] ENGINE Bus STARTED
+[20/Oct/2011:15:30:43] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:15:30:43] ENGINE Bus STARTING
+[20/Oct/2011:15:30:43] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:15:30:43] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:15:30:43] ENGINE Bus STARTED
+[20/Oct/2011:15:31:39] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:15:31:39] ENGINE Bus STARTING
+[20/Oct/2011:15:31:39] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:15:31:39] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:15:31:39] ENGINE Bus STARTED
+[20/Oct/2011:15:32:16] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:15:32:16] ENGINE Bus STARTING
+[20/Oct/2011:15:32:16] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:15:32:16] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:15:32:16] ENGINE Bus STARTED
+[20/Oct/2011:15:33:16] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:15:33:16] ENGINE Bus STARTING
+[20/Oct/2011:15:33:16] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:15:33:16] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:15:33:16] ENGINE Bus STARTED
+[20/Oct/2011:15:34:03] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:15:34:03] ENGINE Bus STARTING
+[20/Oct/2011:15:34:03] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:15:34:03] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:15:34:03] ENGINE Bus STARTED
+[20/Oct/2011:15:40:09] ENGINE Serving on 128.2.210.190:9090
+[20/Oct/2011:15:40:09] ENGINE Bus STARTING
+[20/Oct/2011:15:40:09] ENGINE Started monitor thread '_TimeoutMonitor'.
+[20/Oct/2011:15:40:09] ENGINE Already serving on 128.2.210.190:9090
+[20/Oct/2011:15:40:09] ENGINE Bus STARTED
+[21/Oct/2011:08:58:12] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:08:58:12] ENGINE Bus STARTING
+[21/Oct/2011:08:58:12] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:08:58:12] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:08:58:12] ENGINE Bus STARTED
+[21/Oct/2011:08:59:19] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:08:59:19] ENGINE Bus STARTING
+[21/Oct/2011:08:59:19] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:08:59:19] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:08:59:19] ENGINE Bus STARTED
+[21/Oct/2011:09:00:10] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:09:00:10] ENGINE Bus STARTING
+[21/Oct/2011:09:00:10] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:09:00:10] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:09:00:10] ENGINE Bus STARTED
+[21/Oct/2011:09:01:10] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:09:01:10] ENGINE Bus STARTING
+[21/Oct/2011:09:01:10] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:09:01:10] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:09:01:10] ENGINE Bus STARTED
+[21/Oct/2011:10:45:54] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:10:45:54] ENGINE Bus STARTING
+[21/Oct/2011:10:45:54] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:10:45:54] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:10:45:54] ENGINE Bus STARTED
+[21/Oct/2011:10:47:27] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:10:47:27] ENGINE Bus STARTING
+[21/Oct/2011:10:47:27] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:10:47:27] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:10:47:27] ENGINE Bus STARTED
+[21/Oct/2011:10:50:48] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:10:50:48] ENGINE Bus STARTING
+[21/Oct/2011:10:50:48] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:10:50:48] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:10:50:48] ENGINE Bus STARTED
+[21/Oct/2011:10:51:49] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:10:51:49] ENGINE Bus STARTING
+[21/Oct/2011:10:51:49] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:10:51:49] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:10:51:49] ENGINE Bus STARTED
+[21/Oct/2011:10:52:30] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:10:52:30] ENGINE Bus STARTING
+[21/Oct/2011:10:52:30] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:10:52:30] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:10:52:30] ENGINE Bus STARTED
+[21/Oct/2011:10:56:47] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:10:56:47] ENGINE Bus STARTING
+[21/Oct/2011:10:56:47] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:10:56:47] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:10:56:47] ENGINE Bus STARTED
+[21/Oct/2011:10:57:58] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:10:57:58] ENGINE Bus STARTING
+[21/Oct/2011:10:57:58] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:10:57:58] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:10:57:58] ENGINE Bus STARTED
+[21/Oct/2011:10:59:45] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:10:59:45] ENGINE Bus STARTING
+[21/Oct/2011:10:59:45] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:10:59:45] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:10:59:45] ENGINE Bus STARTED
+[21/Oct/2011:11:01:57] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:11:01:57] ENGINE Bus STARTING
+[21/Oct/2011:11:01:57] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:11:01:57] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:11:01:57] ENGINE Bus STARTED
+[21/Oct/2011:11:07:30] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:11:07:30] ENGINE Bus STARTING
+[21/Oct/2011:11:07:30] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:11:07:30] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:11:07:30] ENGINE Bus STARTED
+[21/Oct/2011:11:09:12] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:11:09:12] ENGINE Bus STARTING
+[21/Oct/2011:11:09:12] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:11:09:12] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:11:09:12] ENGINE Bus STARTED
+[21/Oct/2011:11:15:42] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:11:15:42] ENGINE Bus STARTING
+[21/Oct/2011:11:15:42] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:11:15:42] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:11:15:42] ENGINE Bus STARTED
+[21/Oct/2011:11:17:04] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:11:17:04] ENGINE Bus STARTING
+[21/Oct/2011:11:17:04] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:11:17:04] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:11:17:04] ENGINE Bus STARTED
+[21/Oct/2011:11:18:33] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:11:18:33] ENGINE Bus STARTING
+[21/Oct/2011:11:18:33] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:11:18:33] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:11:18:33] ENGINE Bus STARTED
+[21/Oct/2011:11:44:20] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:11:44:20] ENGINE Bus STARTING
+[21/Oct/2011:11:44:20] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:11:44:20] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:11:44:20] ENGINE Bus STARTED
+[21/Oct/2011:11:44:52] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:11:44:52] ENGINE Bus STARTING
+[21/Oct/2011:11:44:52] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:11:44:52] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:11:44:52] ENGINE Bus STARTED
+[21/Oct/2011:11:45:47] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:11:45:47] ENGINE Bus STARTING
+[21/Oct/2011:11:45:47] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:11:45:47] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:11:45:47] ENGINE Bus STARTED
+[21/Oct/2011:12:07:21] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:12:07:21] ENGINE Bus STARTING
+[21/Oct/2011:12:07:21] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:12:07:21] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:12:07:21] ENGINE Bus STARTED
+[21/Oct/2011:12:07:58] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:12:07:58] ENGINE Bus STARTING
+[21/Oct/2011:12:07:58] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:12:07:58] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:12:07:58] ENGINE Bus STARTED
+[21/Oct/2011:12:10:42] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:12:10:42] ENGINE Bus STARTING
+[21/Oct/2011:12:10:42] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:12:10:42] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:12:10:42] ENGINE Bus STARTED
+[21/Oct/2011:13:16:07] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:16:07] ENGINE Bus STARTING
+[21/Oct/2011:13:16:07] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:16:07] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:16:07] ENGINE Bus STARTED
+[21/Oct/2011:13:17:36] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:17:36] ENGINE Bus STARTING
+[21/Oct/2011:13:17:36] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:17:36] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:17:36] ENGINE Bus STARTED
+[21/Oct/2011:13:33:01] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:33:01] ENGINE Bus STARTING
+[21/Oct/2011:13:33:01] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:33:01] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:33:01] ENGINE Bus STARTED
+[21/Oct/2011:13:34:25] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:34:25] ENGINE Bus STARTING
+[21/Oct/2011:13:34:25] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:34:25] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:34:25] ENGINE Bus STARTED
+[21/Oct/2011:13:43:02] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:43:02] ENGINE Bus STARTING
+[21/Oct/2011:13:43:02] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:43:02] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:43:02] ENGINE Bus STARTED
+[21/Oct/2011:13:43:17] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:43:17] ENGINE Bus STARTING
+[21/Oct/2011:13:43:17] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:43:17] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:43:17] ENGINE Bus STARTED
+[21/Oct/2011:13:44:02] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:44:02] ENGINE Bus STARTING
+[21/Oct/2011:13:44:02] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:44:02] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:44:02] ENGINE Bus STARTED
+[21/Oct/2011:13:45:29] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:45:29] ENGINE Bus STARTING
+[21/Oct/2011:13:45:29] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:45:29] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:45:29] ENGINE Bus STARTED
+[21/Oct/2011:13:46:38] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:46:38] ENGINE Bus STARTING
+[21/Oct/2011:13:46:38] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:46:38] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:46:38] ENGINE Bus STARTED
+[21/Oct/2011:13:50:23] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:50:23] ENGINE Bus STARTING
+[21/Oct/2011:13:50:23] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:50:23] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:50:23] ENGINE Bus STARTED
+[21/Oct/2011:13:51:29] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:51:29] ENGINE Bus STARTING
+[21/Oct/2011:13:51:29] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:51:29] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:51:29] ENGINE Bus STARTED
+[21/Oct/2011:13:52:47] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:52:47] ENGINE Bus STARTING
+[21/Oct/2011:13:52:47] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:52:47] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:52:47] ENGINE Bus STARTED
+[21/Oct/2011:13:54:30] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:54:30] ENGINE Bus STARTING
+[21/Oct/2011:13:54:30] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:54:30] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:54:30] ENGINE Bus STARTED
+[21/Oct/2011:13:55:05] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:55:05] ENGINE Bus STARTING
+[21/Oct/2011:13:55:05] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:55:05] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:55:05] ENGINE Bus STARTED
+[21/Oct/2011:13:56:34] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:13:56:34] ENGINE Bus STARTING
+[21/Oct/2011:13:56:34] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:13:56:34] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:13:56:34] ENGINE Bus STARTED
+[21/Oct/2011:14:00:03] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:00:03] ENGINE Bus STARTING
+[21/Oct/2011:14:00:03] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:00:03] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:00:03] ENGINE Bus STARTED
+[21/Oct/2011:14:02:08] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:02:08] ENGINE Bus STARTING
+[21/Oct/2011:14:02:08] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:02:08] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:02:08] ENGINE Bus STARTED
+[21/Oct/2011:14:03:39] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:03:39] ENGINE Bus STARTING
+[21/Oct/2011:14:03:39] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:03:39] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:03:39] ENGINE Bus STARTED
+[21/Oct/2011:14:07:20] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:07:20] ENGINE Bus STARTING
+[21/Oct/2011:14:07:20] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:07:20] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:07:20] ENGINE Bus STARTED
+[21/Oct/2011:14:09:38] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:09:38] ENGINE Bus STARTING
+[21/Oct/2011:14:09:38] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:09:38] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:09:38] ENGINE Bus STARTED
+[21/Oct/2011:14:10:35] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:10:35] ENGINE Bus STARTING
+[21/Oct/2011:14:10:35] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:10:35] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:10:35] ENGINE Bus STARTED
+[21/Oct/2011:14:14:51] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:14:51] ENGINE Bus STARTING
+[21/Oct/2011:14:14:51] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:14:51] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:14:51] ENGINE Bus STARTED
+[21/Oct/2011:14:15:34] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:15:34] ENGINE Bus STARTING
+[21/Oct/2011:14:15:34] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:15:34] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:15:34] ENGINE Bus STARTED
+[21/Oct/2011:14:16:43] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:16:43] ENGINE Bus STARTING
+[21/Oct/2011:14:16:43] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:16:43] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:16:43] ENGINE Bus STARTED
+[21/Oct/2011:14:18:54] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:18:54] ENGINE Bus STARTING
+[21/Oct/2011:14:18:54] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:18:54] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:18:54] ENGINE Bus STARTED
+[21/Oct/2011:14:19:58] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:19:58] ENGINE Bus STARTING
+[21/Oct/2011:14:19:58] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:19:58] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:19:58] ENGINE Bus STARTED
+[21/Oct/2011:14:21:37] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:21:37] ENGINE Bus STARTING
+[21/Oct/2011:14:21:37] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:21:37] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:21:37] ENGINE Bus STARTED
+[21/Oct/2011:14:22:56] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:22:56] ENGINE Bus STARTING
+[21/Oct/2011:14:22:56] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:22:56] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:22:56] ENGINE Bus STARTED
+[21/Oct/2011:14:24:35] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:24:35] ENGINE Bus STARTING
+[21/Oct/2011:14:24:35] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:24:35] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:24:35] ENGINE Bus STARTED
+[21/Oct/2011:14:31:27] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:31:27] ENGINE Bus STARTING
+[21/Oct/2011:14:31:27] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:31:27] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:31:27] ENGINE Bus STARTED
+[21/Oct/2011:14:34:41] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:34:41] ENGINE Bus STARTING
+[21/Oct/2011:14:34:41] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:34:41] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:34:41] ENGINE Bus STARTED
+[21/Oct/2011:14:35:53] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:35:53] ENGINE Bus STARTING
+[21/Oct/2011:14:35:53] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:35:53] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:35:53] ENGINE Bus STARTED
+[21/Oct/2011:14:36:41] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:36:41] ENGINE Bus STARTING
+[21/Oct/2011:14:36:41] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:36:41] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:36:41] ENGINE Bus STARTED
+[21/Oct/2011:14:37:52] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:37:52] ENGINE Bus STARTING
+[21/Oct/2011:14:37:52] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:37:52] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:37:52] ENGINE Bus STARTED
+[21/Oct/2011:14:38:37] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:38:37] ENGINE Bus STARTING
+[21/Oct/2011:14:38:37] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:38:37] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:38:37] ENGINE Bus STARTED
+[21/Oct/2011:14:40:25] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:40:25] ENGINE Bus STARTING
+[21/Oct/2011:14:40:25] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:40:25] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:40:25] ENGINE Bus STARTED
+[21/Oct/2011:14:41:09] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:41:09] ENGINE Bus STARTING
+[21/Oct/2011:14:41:09] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:41:09] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:41:09] ENGINE Bus STARTED
+[21/Oct/2011:14:42:03] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:42:03] ENGINE Bus STARTING
+[21/Oct/2011:14:42:03] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:42:03] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:42:03] ENGINE Bus STARTED
+[21/Oct/2011:14:45:20] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:45:20] ENGINE Bus STARTING
+[21/Oct/2011:14:45:20] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:45:20] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:45:20] ENGINE Bus STARTED
+[21/Oct/2011:14:46:24] ENGINE Serving on 128.2.210.190:9090
+[21/Oct/2011:14:46:24] ENGINE Bus STARTING
+[21/Oct/2011:14:46:24] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:14:46:24] ENGINE Already serving on 128.2.210.190:9090
+[21/Oct/2011:14:46:24] ENGINE Bus STARTED
+[21/Oct/2011:17:05:39] ENGINE Error in HTTP server: shutting down
+Traceback (most recent call last):
+  File "C:\Python26\lib\site-packages\cherrypy\process\servers.py", line 187, in _start_http_thread
+    self.httpserver.start()
+  File "C:\Python26\lib\site-packages\cherrypy\wsgiserver\__init__.py", line 1753, in start
+    raise socket.error(msg)
+error: No socket could be created
+
+[21/Oct/2011:17:05:39] ENGINE Bus STOPPING
+[21/Oct/2011:17:05:39] ENGINE HTTP Server cherrypy._cpwsgi_server.CPWSGIServer(('128.2.210.190', 9090)) already shut down
+[21/Oct/2011:17:05:39] ENGINE No thread running for None.
+[21/Oct/2011:17:05:39] ENGINE Bus STOPPED
+[21/Oct/2011:17:05:39] ENGINE Bus EXITING
+[21/Oct/2011:17:05:39] ENGINE Bus EXITED
+[21/Oct/2011:17:07:25] ENGINE Serving on localhost:9090
+[21/Oct/2011:17:07:25] ENGINE Bus STARTING
+[21/Oct/2011:17:07:25] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:17:07:25] ENGINE Already serving on localhost:9090
+[21/Oct/2011:17:07:25] ENGINE Bus STARTED
+[21/Oct/2011:17:09:17] ENGINE Serving on localhost:9090
+[21/Oct/2011:17:09:17] ENGINE Bus STARTING
+[21/Oct/2011:17:09:17] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:17:09:17] ENGINE Already serving on localhost:9090
+[21/Oct/2011:17:09:17] ENGINE Bus STARTED
+[21/Oct/2011:17:10:26] ENGINE Serving on localhost:9090
+[21/Oct/2011:17:10:26] ENGINE Bus STARTING
+[21/Oct/2011:17:10:26] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:17:10:26] ENGINE Already serving on localhost:9090
+[21/Oct/2011:17:10:26] ENGINE Bus STARTED
+[21/Oct/2011:17:43:40] ENGINE Serving on localhost:9090
+[21/Oct/2011:17:43:40] ENGINE Bus STARTING
+[21/Oct/2011:17:43:40] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:17:43:40] ENGINE Already serving on localhost:9090
+[21/Oct/2011:17:43:40] ENGINE Bus STARTED
+[21/Oct/2011:17:44:32] ENGINE Serving on localhost:9090
+[21/Oct/2011:17:44:32] ENGINE Bus STARTING
+[21/Oct/2011:17:44:32] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:17:44:32] ENGINE Already serving on localhost:9090
+[21/Oct/2011:17:44:32] ENGINE Bus STARTED
+[21/Oct/2011:17:45:51] ENGINE Serving on localhost:9090
+[21/Oct/2011:17:45:51] ENGINE Bus STARTING
+[21/Oct/2011:17:45:51] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:17:45:51] ENGINE Already serving on localhost:9090
+[21/Oct/2011:17:45:51] ENGINE Bus STARTED
+[21/Oct/2011:17:45:55] ENGINE Started monitor thread 'Session cleanup'.
+[21/Oct/2011:17:48:14] ENGINE Serving on localhost:9090
+[21/Oct/2011:17:48:14] ENGINE Bus STARTING
+[21/Oct/2011:17:48:14] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:17:48:14] ENGINE Already serving on localhost:9090
+[21/Oct/2011:17:48:14] ENGINE Bus STARTED
+[21/Oct/2011:17:48:40] ENGINE Serving on localhost:9090
+[21/Oct/2011:17:48:40] ENGINE Bus STARTING
+[21/Oct/2011:17:48:40] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:17:48:40] ENGINE Already serving on localhost:9090
+[21/Oct/2011:17:48:40] ENGINE Bus STARTED
+[21/Oct/2011:17:53:03] ENGINE Serving on localhost:9090
+[21/Oct/2011:17:53:03] ENGINE Bus STARTING
+[21/Oct/2011:17:53:03] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:17:53:03] ENGINE Already serving on localhost:9090
+[21/Oct/2011:17:53:03] ENGINE Bus STARTED
+[21/Oct/2011:17:53:19] ENGINE Started monitor thread 'Session cleanup'.
+[21/Oct/2011:17:55:55] ENGINE Serving on localhost:9090
+[21/Oct/2011:17:55:55] ENGINE Bus STARTING
+[21/Oct/2011:17:55:55] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:17:55:55] ENGINE Already serving on localhost:9090
+[21/Oct/2011:17:55:55] ENGINE Bus STARTED
+[21/Oct/2011:17:55:59] ENGINE Started monitor thread 'Session cleanup'.
+[21/Oct/2011:18:15:56] ENGINE Serving on localhost:9090
+[21/Oct/2011:18:15:56] ENGINE Bus STARTING
+[21/Oct/2011:18:15:56] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:18:15:56] ENGINE Already serving on localhost:9090
+[21/Oct/2011:18:15:56] ENGINE Bus STARTED
+[21/Oct/2011:18:16:11] ENGINE Started monitor thread 'Session cleanup'.
+[21/Oct/2011:18:17:48] ENGINE Serving on localhost:9090
+[21/Oct/2011:18:17:48] ENGINE Bus STARTING
+[21/Oct/2011:18:17:48] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:18:17:48] ENGINE Already serving on localhost:9090
+[21/Oct/2011:18:17:48] ENGINE Bus STARTED
+[21/Oct/2011:18:17:54] ENGINE Started monitor thread 'Session cleanup'.
+[21/Oct/2011:18:18:00]  Traceback (most recent call last):
+  File "C:\Python26\lib\site-packages\cherrypy\_cprequest.py", line 97, in run
+    hook()
+  File "C:\Python26\lib\site-packages\cherrypy\_cprequest.py", line 57, in __call__
+    return self.callback(**self.kwargs)
+  File "C:\Python26\lib\site-packages\cherrypy\_cptools.py", line 176, in _wrapper
+    if self.callable(**kwargs):
+  File "C:\Python26\lib\site-packages\cherrypy\lib\cptools.py", line 397, in session_auth
+    return sa.run()
+  File "C:\Python26\lib\site-packages\cherrypy\lib\cptools.py", line 379, in run
+    return self.do_login(**request.params)
+  File "C:\Python26\lib\site-packages\cherrypy\lib\cptools.py", line 312, in do_login
+    error_msg = self.check_username_and_password(username, password)
+  File "D:\Work\Development\Letsgo_UserSim\LetsgoWebService.py", line 27, in checkLoginAndPassword
+    print 'here' + cherrypy.session.get('sessid')
+TypeError: cannot concatenate 'str' and 'NoneType' objects
+
+[21/Oct/2011:18:18:00] HTTP Traceback (most recent call last):
+  File "C:\Python26\lib\site-packages\cherrypy\_cprequest.py", line 642, in respond
+    self.hooks.run('before_handler')
+  File "C:\Python26\lib\site-packages\cherrypy\_cprequest.py", line 97, in run
+    hook()
+  File "C:\Python26\lib\site-packages\cherrypy\_cprequest.py", line 57, in __call__
+    return self.callback(**self.kwargs)
+  File "C:\Python26\lib\site-packages\cherrypy\_cptools.py", line 176, in _wrapper
+    if self.callable(**kwargs):
+  File "C:\Python26\lib\site-packages\cherrypy\lib\cptools.py", line 397, in session_auth
+    return sa.run()
+  File "C:\Python26\lib\site-packages\cherrypy\lib\cptools.py", line 379, in run
+    return self.do_login(**request.params)
+  File "C:\Python26\lib\site-packages\cherrypy\lib\cptools.py", line 312, in do_login
+    error_msg = self.check_username_and_password(username, password)
+  File "D:\Work\Development\Letsgo_UserSim\LetsgoWebService.py", line 27, in checkLoginAndPassword
+    print 'here' + cherrypy.session.get('sessid')
+TypeError: cannot concatenate 'str' and 'NoneType' objects
+
+[21/Oct/2011:18:20:45] ENGINE Serving on localhost:9090
+[21/Oct/2011:18:20:45] ENGINE Bus STARTING
+[21/Oct/2011:18:20:45] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:18:20:45] ENGINE Already serving on localhost:9090
+[21/Oct/2011:18:20:45] ENGINE Bus STARTED
+[21/Oct/2011:18:20:52] ENGINE Started monitor thread 'Session cleanup'.
+[21/Oct/2011:18:22:41] ENGINE Serving on localhost:9090
+[21/Oct/2011:18:22:41] ENGINE Bus STARTING
+[21/Oct/2011:18:22:41] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:18:22:41] ENGINE Already serving on localhost:9090
+[21/Oct/2011:18:22:41] ENGINE Bus STARTED
+[21/Oct/2011:18:22:46] ENGINE Started monitor thread 'Session cleanup'.
+[21/Oct/2011:18:25:01] ENGINE Serving on localhost:9090
+[21/Oct/2011:18:25:01] ENGINE Bus STARTING
+[21/Oct/2011:18:25:01] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:18:25:01] ENGINE Already serving on localhost:9090
+[21/Oct/2011:18:25:01] ENGINE Bus STARTED
+[21/Oct/2011:18:26:23] ENGINE Serving on localhost:9090
+[21/Oct/2011:18:26:23] ENGINE Bus STARTING
+[21/Oct/2011:18:26:23] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:18:26:23] ENGINE Already serving on localhost:9090
+[21/Oct/2011:18:26:23] ENGINE Bus STARTED
+[21/Oct/2011:18:26:28] ENGINE Started monitor thread 'Session cleanup'.
+[21/Oct/2011:18:28:14] ENGINE Serving on localhost:9090
+[21/Oct/2011:18:28:14] ENGINE Bus STARTING
+[21/Oct/2011:18:28:14] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:18:28:14] ENGINE Already serving on localhost:9090
+[21/Oct/2011:18:28:14] ENGINE Bus STARTED
+[21/Oct/2011:18:28:22] ENGINE Started monitor thread 'Session cleanup'.
+[21/Oct/2011:20:16:11] ENGINE Serving on localhost:9090
+[21/Oct/2011:20:16:11] ENGINE Bus STARTING
+[21/Oct/2011:20:16:11] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:20:16:11] ENGINE Already serving on localhost:9090
+[21/Oct/2011:20:16:11] ENGINE Bus STARTED
+[21/Oct/2011:20:16:17] ENGINE Started monitor thread 'Session cleanup'.
+[21/Oct/2011:20:19:10] ENGINE Serving on localhost:9090
+[21/Oct/2011:20:19:10] ENGINE Bus STARTING
+[21/Oct/2011:20:19:10] ENGINE Started monitor thread '_TimeoutMonitor'.
+[21/Oct/2011:20:19:10] ENGINE Already serving on localhost:9090
+[21/Oct/2011:20:19:10] ENGINE Bus STARTED
+[21/Oct/2011:20:19:14] ENGINE Started monitor thread 'Session cleanup'.
