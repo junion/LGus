@@ -528,7 +528,20 @@ class Factor(SubDomain):
         if keyfn is not None:
             result.sort(key=keyfn,reverse=True)
         return tuple(result)
+    
+    def insts_data_dict(self,keyfn=None):
+        """Return instantiations with values
 
+        Returns a dict. 
+
+        @return: Instantiations with values ordered by value
+        @rtype: Dict
+        """
+
+        data = self._data
+        result = dict((inst[0], data[i]) for i, inst in enumerate(self.insts()))
+        return result
+    
     def map(self, fn, keep_class=False):
         """Transform by an arity 1 function.
         By default, C{self} is forced to a Factor, since rarely

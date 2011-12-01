@@ -217,9 +217,6 @@ def show_obs_sbr():
             plt.show()
         except (ValueError,RuntimeError) as e:
             print e
-#            pass
-
-
 
 def show_cs():
     import numpy as np
@@ -263,7 +260,111 @@ def show_cs():
                 plt.axis([0,1,0,10])
             plt.grid(True)
             plt.show()
-      
+
+def extract_usr_model():
+    import Variables
+    from Parameters import Factor
+    import LetsgoCorpus as lc
+    import LetsgoSerializer as ls
+    import LetsgoVariables as lv
+    
+    Variables.clear_default_domain()
+    Variables.set_default_domain({'H_bn_t':lv.H_bn,'H_dp_t':lv.H_dp,'H_ap_t':lv.H_ap,\
+                                  'H_tt_t':lv.H_tt,'UA_tt':lv.UA,'H_bn_tt':lv.H_bn,\
+                                  'H_dp_tt':lv.H_dp,'H_ap_tt':lv.H_ap,'H_tt_tt':lv.H_tt})
+
+    # estimate the ratio of dialogs w/ bn and dialogs w/o bn in the goal
+    #
+     
+    try:
+        fGbnO_Ht_SAttCO_UAtt = ls.load_model('_factor_o_C-o.model').marginalise_onto(['UA_tt']).normalised()
+        fGbnX_Ht_SAttCO_UAtt = ls.load_model('_factor_x_C-o.model').marginalise_onto(['UA_tt']).normalised()
+        fGbn_Ht_SAttCO_UAtt = (fGbnO_Ht_SAttCO_UAtt + fGbnX_Ht_SAttCO_UAtt).normalised()
+    except:
+        print ('Error:cannot find model')
+        exit()
+
+    try:
+        fGbnO_Ht_SAttCX_UAtt = ls.load_model('_factor_o_C-x.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnO_Ht_SAtt_UAttX
+        fGbnX_Ht_SAttCX_UAtt = ls.load_model('_factor_x_C-x.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnX_Ht_SAtt_UAttX
+        fGbn_Ht_SAttCX_UAtt = (fGbnO_Ht_SAttCX_UAtt + fGbnX_Ht_SAttCX_UAtt).normalised()
+#        print fGbn_Ht_SAtt_UAttX
+    except:
+        print ('Error:cannot find model')
+        exit()
+
+    try:
+        fGbnO_Ht_SAttBN_UAtt = ls.load_model('_factor_o_R-bn.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnO_Ht_SAttBN_UAtt
+        fGbnX_Ht_SAttBN_UAtt = ls.load_model('_factor_x_R-bn.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnX_Ht_SAttBN_UAtt
+        fGbn_Ht_SAttBN_UAtt = (fGbnO_Ht_SAttBN_UAtt + fGbnX_Ht_SAttBN_UAtt).normalised()
+#        print fGbn_Ht_SAttBN_UAtt
+    except:
+        print ('Error:cannot find model')
+        exit()
+
+    try:
+        fGbnO_Ht_SAttDP_UAtt = ls.load_model('_factor_o_R-dp.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnO_Ht_SAttDP_UAtt
+        fGbnX_Ht_SAttDP_UAtt = ls.load_model('_factor_x_R-dp.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnX_Ht_SAttDP_UAtt
+        fGbn_Ht_SAttDP_UAtt = (fGbnO_Ht_SAttDP_UAtt + fGbnX_Ht_SAttDP_UAtt).normalised()
+#        print fGbn_Ht_SAttDP_UAtt
+    except:
+        print ('Error:cannot find model')
+        exit()
+
+    try:
+        fGbnO_Ht_SAttAP_UAtt = ls.load_model('_factor_o_R-ap.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnO_Ht_SAttAP_UAtt
+        fGbnX_Ht_SAttAP_UAtt = ls.load_model('_factor_x_R-ap.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnX_Ht_SAttAP_UAtt
+        fGbn_Ht_SAttAP_UAtt = (fGbnO_Ht_SAttAP_UAtt + fGbnX_Ht_SAttAP_UAtt).normalised()
+#        print fGbn_Ht_SAttAP_UAtt
+    except:
+        print ('Error:cannot find model')
+        exit()
+
+    try:
+        fGbnO_Ht_SAttTT_UAtt = ls.load_model('_factor_o_R-tt.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnO_Ht_SAttTT_UAtt
+        fGbnX_Ht_SAttTT_UAtt = ls.load_model('_factor_x_R-tt.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnX_Ht_SAttTT_UAtt
+        fGbn_Ht_SAttTT_UAtt = (fGbnO_Ht_SAttTT_UAtt + fGbnX_Ht_SAttTT_UAtt).normalised()
+#        print fGbn_Ht_SAttTT_UAtt
+    except:
+        print ('Error:cannot find model')
+        exit()
+
+    try:
+        fGbnO_Ht_SAttOP_UAtt = ls.load_model('_factor_o_R-open.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnO_Ht_SAttOP_UAtt
+        fGbnX_Ht_SAttOP_UAtt = ls.load_model('_factor_x_R-open.model').marginalise_onto(['UA_tt']).normalised()
+#        print fGbnX_Ht_SAttOP_UAtt
+        fGbn_Ht_SAttOP_UAtt = (fGbnO_Ht_SAttOP_UAtt + fGbnX_Ht_SAttOP_UAtt).normalised()
+#        print fGbn_Ht_SAttOP_UAtt
+    except:
+        print ('Error:cannot find model')
+        exit()
+
+    um = {}
+    um['C-o'] = fGbn_Ht_SAttCO_UAtt.insts_data_dict()
+    um['C-x'] = fGbn_Ht_SAttCX_UAtt.insts_data_dict()
+    um['R-bn'] = fGbn_Ht_SAttBN_UAtt.insts_data_dict()
+    um['R-dp'] = fGbn_Ht_SAttDP_UAtt.insts_data_dict()
+    um['R-ap'] = fGbn_Ht_SAttAP_UAtt.insts_data_dict()
+    um['R-tt'] = fGbn_Ht_SAttTT_UAtt.insts_data_dict()
+    um['R-open'] = fGbn_Ht_SAttOP_UAtt.insts_data_dict()
+    
+    print um
+    
+    print 'Writing parameters...'
+        
+    ls.store_model(um,'_user_action.model')
+          
 if __name__ == "__main__":
 #    preprocess()
 #    training()
@@ -273,4 +374,5 @@ if __name__ == "__main__":
 #    interactive_simulation()
 #    show_cs()
 #    show_dialog_len()
-    show_obs_sbr()
+#    show_obs_sbr()
+    extract_usr_model()
