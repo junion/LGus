@@ -1,4 +1,4 @@
-import os.path,string
+import os.path,string,traceback
 import pickle
 import cherrypy
 import simplejson
@@ -196,45 +196,56 @@ class UsrSim(object):
             old = s.split(':')[0]
             s = string.replace(s,old,trans[old])
             return s.split(')')[0]
-        
-        simulator = cherrypy.session.get('simulator')
-        params = cherrypy.request.json
-        print params
-        if 'Command' in params:
-            if params['Command'] == 'Start over':
-                simulator.dialog_init()
-                return {}
-            elif params['Command'] == 'Get user goal':
-                return {'Bus number':simulator.goal['G_bn'],\
-                       'Departure place':simulator.goal['G_dp'],\
-                       'Arrival place':simulator.goal['G_ap'],\
-                       'Travel time':simulator.goal['G_tt']}
-        elif 'System action' in params:
-            usr_acts,cs = simulator.get_usr_act(web2int(params['System action']))
-            web_ua = []
-            for usr_act in usr_acts:
-                try:
-                    act,field,val = usr_act.split(':')
-                    if act == 'I':
-                        web_act = 'Inform('
-                    if field == 'bn':
-                        web_act += 'Bus number' 
-                    elif field == 'dp':
-                        web_act += 'Departure place'
-                    elif field == 'ap':
-                        web_act += 'Arrival place'
-                    elif field == 'tt':
-                        web_act += 'Travel time'
-                    web_ua.append(web_act+':'+val+')')
-                except:
-                    if usr_act == 'yes':
-                        web_ua.append('Affirm')
-                    elif usr_act == 'no':
-                        web_ua.append('Deny')
-                    elif usr_act == 'non-understanding':
-                        web_ua.append('Non-understanding')
-            return {'User action':web_ua,'Confidence score':cs}
-        
+
+        try:
+            simulator = cherrypy.session.get('simulator')
+            params = cherrypy.request.json
+            print params
+            if 'Command' in params:
+                if params['Command'] == 'Start over':
+                    if 'Error rate' in params:
+                        print params['Error rate']
+                        simulator.dialog_init(params['Error rate'])
+                    else:
+                        simulator.dialog_init()
+                    return {}
+                elif params['Command'] == 'Get user goal':
+                    return {'Bus number':simulator.goal['G_bn'],\
+                           'Departure place':simulator.goal['G_dp'],\
+                           'Arrival place':simulator.goal['G_ap'],\
+                           'Travel time':simulator.goal['G_tt']}
+            elif 'System action' in params:
+                if 'Approx' in params:
+                    print params['Approx']
+                    usr_acts,cs = simulator.get_usr_act(web2int(params['System action']),approx=params['Approx'])
+                else:
+                    usr_acts,cs = simulator.get_usr_act(web2int(params['System action']))
+                web_ua = []
+                for usr_act in usr_acts:
+                    try:
+                        act,field,val = usr_act.split(':')
+                        if act == 'I':
+                            web_act = 'Inform('
+                        if field == 'bn':
+                            web_act += 'Bus number' 
+                        elif field == 'dp':
+                            web_act += 'Departure place'
+                        elif field == 'ap':
+                            web_act += 'Arrival place'
+                        elif field == 'tt':
+                            web_act += 'Travel time'
+                        web_ua.append(web_act+':'+val+')')
+                    except:
+                        if usr_act == 'yes':
+                            web_ua.append('Affirm')
+                        elif usr_act == 'no':
+                            web_ua.append('Deny')
+                        elif usr_act == 'non-understanding':
+                            web_ua.append('Non-understanding')
+                return {'User action':web_ua,'Confidence score':cs}
+        except Exception:
+            print traceback.format_exc()
+                
 class Register(object):
     exposed = True
             

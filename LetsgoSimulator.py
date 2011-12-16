@@ -1,4 +1,4 @@
-import copy,ast
+import copy,ast,traceback
 import Variables
 from Parameters import Factor
 from Models import SFR, JFR
@@ -57,6 +57,8 @@ class IntentionSimulator(object):
 #                                      'H_tt_0':lv.H_tt})
                 
     def get_intention(self,sys_act,approx=False):
+        print 'get_intention'
+        print approx
         t = self.turn_n
         tmp_fHt_UAtt_Htt = Factor(variables=('H_bn_%s'%t,'H_dp_%s'%t,'H_ap_%s'%t,'H_tt_%s'%t,\
                                    'UA_%s'%(t+1),'H_bn_%s'%(t+1),'H_dp_%s'%(t+1),\
@@ -124,8 +126,9 @@ class ErrorSimulator(object):
             self.inco_cs.append(ls.load_model('_incorrect_confidence_score_prob_dist_class_%d.model'%c))
         self.q_class_sampler = MultinomialSampler(ls.load_model('_quality_class.model'))
         
-    def dialog_init(self):
-        q_class = self.q_class_sampler.sample()
+    def dialog_init(self,q_class=-1):
+        if q_class == -1:
+            q_class = self.q_class_sampler.sample()
         print 'Error quality class %d'%q_class
         self.c_cm_ua_template = self.cm_ua_template[q_class]
         self.c_co_cs = self.co_cs[q_class]
@@ -139,6 +142,7 @@ class ErrorSimulator(object):
             err_ua_table = self.c_cm_ua_template[','.join(sorted(ua_ins.keys()))]
             err_ua_templates = MultinomialSampler(err_ua_table).sample().split(',')
         except KeyError:
+            print traceback.format_exc()
             print 'Error template backup'
             err_ua_templates = ['non-understanding']
             for k, key in enumerate(ua_ins.keys()):
@@ -169,15 +173,16 @@ class ErrorSimulator(object):
                     cs = MultinomialSampler(self.c_inco_cs[field]).sample()
                     inc_inco = True
             except ValueError:
+                print traceback.format_exc()
                 err_val = err_ua_template
                 if err_val in ua_ins and err_val in ['yes','no']:
                     cs = MultinomialSampler(self.c_co_cs[err_val]).sample()
                 else:
                     try:
-                        cs = MultinomialSampler(self.c_inco_cs[err_val]).sample()
                         inc_inco = True
-                    except KeyError:
-                        pass
+                        cs = MultinomialSampler(self.c_inco_cs[err_val]).sample()
+                    except KeyError,UnboundLocalError:
+                        print traceback.format_exc()
             err_ua.append(':'.join(err_ua_template.split(':')[:-1]+[err_val]))
         try:
             if len(err_ua) > 1:
@@ -186,6 +191,7 @@ class ErrorSimulator(object):
                 else:
                     cs = MultinomialSampler(self.c_co_cs['multi%d'%len(err_ua)]).sample()
         except:
+            print traceback.format_exc()
             if inc_inco:
                 cs = MultinomialSampler(self.c_inco_cs['total']).sample()
             else:
@@ -227,14 +233,14 @@ class UserSimulator(object):
             else: ua_ins[act] = act
         return ua_ins
     
-    def dialog_init(self):
+    def dialog_init(self,q_class=-1):
         self.goal = self.goal_gen.goal()
         print self.goal
         self.int_sim.dialog_init(self.goal_ins2abs(copy.deepcopy(self.goal)))
-        self.err_sim.dialog_init()
+        self.err_sim.dialog_init(q_class)
     
-    def get_usr_act(self,sys_act):
-        ua_pt,ua = self.int_sim.get_intention(self.sys_act_ins2abs(sys_act))
+    def get_usr_act(self,sys_act,approx=False):
+        ua_pt,ua = self.int_sim.get_intention(self.sys_act_ins2abs(sys_act),approx)
         ua_ins = self.usr_act_abs2ins(ua)
         print ua_ins
         noisy_ua,cs = self.err_sim.get_act(ua_ins,self.goal)

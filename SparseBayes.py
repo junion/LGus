@@ -1,6 +1,6 @@
 import logging
 import logging.config
-from GlobalConfig import GetConfig
+from GlobalConfig import InitConfig,GetConfig
 import numpy as np
 import scipy.linalg as la
     
@@ -9,7 +9,9 @@ MY_ID = 'SparseBayes'
 class SparseBayes(object):
     def __init__(self):
         old_settings = np.seterr(all='warn',divide='raise',invalid='raise')
+        InitConfig()
         self.config = GetConfig()
+        self.config.read(['LGus.conf'])
         logging.config.fileConfig('logging.conf')
         self.appLogger = logging.getLogger('Learning')
         if id(np.dot) == id(np.core.multiarray.dot):
