@@ -1,7 +1,7 @@
 
 def preprocess():
     import LetsgoCorpus as lc
-    corpus = lc.Corpus('E:/Data/2011/training')
+    corpus = lc.Corpus('E:/Data/Recent')
     corpus.preprocess()
 #    corpus2 = lc.Corpus('G:/data/LetsGoPublic2/20070616/',prep=True)
 #    for dialog in corpus2.dialogs():
@@ -10,17 +10,17 @@ def preprocess():
 def training():
     import LetsgoLearner as ll
 
-    int_learner = ll.LetsgoIntentionModelLearner('E:/Data/2011/training',prep=True)
+    int_learner = ll.LetsgoIntentionModelLearner('E:/Data/Recent',prep=True)
     int_learner.learn()
     
-    err_learner = ll.LetsgoErrorModelLearner('E:/Data/2011/training',prep=True)
+    err_learner = ll.LetsgoErrorModelLearner('E:/Data/Recent',prep=True)
     err_learner.learn()
 
 def batch_simulation():
     import LetsgoCorpus as lc
     import LetsgoSimulator as ls
 
-    corpus = lc.Corpus('E:/Data/2011/training',prep=True)
+    corpus = lc.Corpus('E:/Data/Recent',prep=True)
     simulator = ls.IntentionSimulator()
     
     for dialog in corpus.dialogs():
@@ -33,7 +33,7 @@ def batch_simulation():
 def goal_table():
     import LetsgoSimulator as ls
     
-    gg = ls.GoalGenerator(data='E:/Data/2011/training',init=True,prep=True)
+    gg = ls.GoalGenerator(data='E:/Data/Recent',init=True,prep=True)
 #    gg.show_goal_table()
     print gg.goal()
  
@@ -56,7 +56,7 @@ def show_dialog_len():
     import LetsgoCorpus as lc
     import operator
 
-    corpus = lc.Corpus('E:/Data/2011/training',prep=True)
+    corpus = lc.Corpus('E:/Data/Recent',prep=True)
     
     l = [];avg_cs = []
     for dialog in corpus.dialogs():
@@ -366,13 +366,13 @@ def extract_usr_model():
     ls.store_model(um,'_user_action.model')
           
 if __name__ == "__main__":
-#    preprocess()
-#    training()
-#    goal_table()
+    preprocess()
+    training()
+    goal_table()
 #    batch_simulation()
 
 #    interactive_simulation()
 #    show_cs()
 #    show_dialog_len()
 #    show_obs_sbr()
-    extract_usr_model()
+#    extract_usr_model()
