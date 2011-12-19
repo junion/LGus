@@ -147,42 +147,47 @@ def show_obs_sbr():
         co = total_co_cs[k]
         inco = total_inco_cs[k]
         
-        print len(co)
-        print len(inco)
+        print 'length of correct: ',len(co)
+        print 'length of incorrect: ',len(inco)
         
 #        n,bins,patches = plt.hist([co,inco],bins=np.arange(0.0,1.1,0.1),\
 #                                  normed=0,color=['green','yellow'],\
 #                                  label=['Correct','Incorrect'],alpha=0.75)
     
         try:
+            x_co = np.arange(0,1.001,0.001)
+            x_inco = np.arange(0,1.001,0.001)
             h_co = statistics.bandwidth(np.array(co),weight=None,kernel='Gaussian')
-            print h_co
-            y_co,x_co = statistics.pdf(np.array(co),kernel='Gaussian',n=1000)
-            print len(x_co)
+            print 'bandwidth of correct: ',h_co
+#            y_co,x_co = statistics.pdf(np.array(co),kernel='Gaussian',n=1000)
+            y_co = statistics.pdf(np.array(co),x=x_co,kernel='Gaussian')
+            print 'length of correct: ',len(x_co)
             h_inco = statistics.bandwidth(np.array(inco),weight=None,kernel='Gaussian')
-            print h_inco
-            y_inco,x_inco = statistics.pdf(np.array(inco),kernel='Gaussian',n=1000)
-            print len(x_inco)
+            print 'bandwidth of incorrect: ',h_inco
+#            y_inco,x_inco = statistics.pdf(np.array(inco),kernel='Gaussian',n=1000)
+            y_inco = statistics.pdf(np.array(inco),x=x_inco,kernel='Gaussian')
+            print 'length of incorrect: ',len(x_inco)
             
             y_co += 1e-10
             y_inco = y_inco*(float(len(inco))/len(co)) + 1e-10
     
             y_co_max = np.max(y_co)
-            print y_co_max
+            print 'max of correct: ',y_co_max
             y_inco_max = np.max(y_inco)
-            print y_inco_max
+            print 'max of incorrect: ',y_inco_max
             y_max = max([y_co_max,y_inco_max])
-            print y_max         
+            print 'max of total: ',y_max         
             plt.plot(x_co,y_co/y_max,'g.-',alpha=0.75)
             plt.plot(x_inco,y_inco/y_max,'r.-',alpha=0.75)
-            
+            print x_co
+            print x_inco
             y = y_co/(y_co + y_inco)
             plt.plot(x_co,y,'b--',alpha=0.75)
 
             m = SparseBayes()
             X = np.atleast_2d(x_co).T
             Y = np.atleast_2d(y).T
-            basisWidth=max([h_co,h_inco])
+            basisWidth=min([h_co,h_inco])
             BASIS = basis_func(X,basisWidth)
             try:   
                 Relevant,Mu,Alpha,beta,update_count,add_count,delete_count,full_count = \
@@ -364,15 +369,18 @@ def extract_usr_model():
     print 'Writing parameters...'
         
     ls.store_model(um,'_user_action.model')
+    
+    print 'Done'
           
 if __name__ == "__main__":
-    preprocess()
+#    preprocess()
+#    show_obs_sbr()
     training()
     goal_table()
+    extract_usr_model()
+
 #    batch_simulation()
 
 #    interactive_simulation()
 #    show_cs()
 #    show_dialog_len()
-#    show_obs_sbr()
-#    extract_usr_model()

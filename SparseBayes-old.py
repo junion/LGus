@@ -1,6 +1,6 @@
 import logging
 import logging.config
-from GlobalConfig import GetConfig
+from GlobalConfig import InitConfig,GetConfig
 import numpy as np
 import scipy.linalg as la
     
@@ -8,15 +8,15 @@ MY_ID = 'SparseBayes'
 
 class SparseBayes(object):
     def __init__(self):
-        old_settings = np.seterr(all='warn',divide='raise',invalid='raise') 
-#        logging.config.fileConfig('logging.conf')
+        old_settings = np.seterr(all='warn',divide='raise',invalid='raise')
+#        InitConfig()
+        self.config = GetConfig()
+#        self.config.read(['LGus.conf'])
+        logging.config.fileConfig('logging.conf')
         self.appLogger = logging.getLogger('Learning')
         if id(np.dot) == id(np.core.multiarray.dot):
             self.appLogger.info("Not using blas/lapack!")
         self.config = GetConfig()
-        self._load_config()
-
-    def _load_config(self):
         self.GAUSSIAN_SNR_INIT = self.config.getfloat(MY_ID,'GAUSSIAN_SNR_INIT')
         self.INIT_ALPHA_MAX = self.config.getfloat(MY_ID,'INIT_ALPHA_MAX')
         self.INIT_ALPHA_MIN = self.config.getfloat(MY_ID,'INIT_ALPHA_MIN')
@@ -33,7 +33,6 @@ class SparseBayes(object):
         self.CONTROL_BasisAlignmentTest = self.config.getboolean(MY_ID,'CONTROL_BasisAlignmentTest')
         self.CONTROL_AlignmentMax = 1 - self.ALIGNMENT_ZERO
         self.CONTROL_BasisFunctionMax = self.config.getint(MY_ID,'CONTROL_BasisFunctionMax')
-        self.CONTROL_DiscardRedundantBasis = self.config.getboolean(MY_ID,'CONTROL_DiscardRedundantBasis')
         self.OPTIONS_iteration = self.config.getint(MY_ID,'OPTIONS_iteration')
         self.OPTIONS_monitor = self.config.getint(MY_ID,'OPTIONS_monitor')
         self.SETTING_noiseStdDev = self.config.getfloat(MY_ID,'SETTING_noiseStdDev')
@@ -44,9 +43,6 @@ class SparseBayes(object):
         self.ACTION_NOISE_ONLY = self.config.getint(MY_ID,'ACTION_NOISE_ONLY')
         self.ACTION_ALIGNMENT_SKIP = self.config.getint(MY_ID,'ACTION_ALIGNMENT_SKIP')
 
-    def reload_config(self):
-        self._load_config()
-        
     def preprocess(self,BASIS):
 #        self.appLogger.debug('preprocess')
         try:
@@ -55,7 +51,7 @@ class SparseBayes(object):
             self.appLogger.error('Error BASIS:\n %s'%str(BASIS))
 #            print 'Error BASIS:\n %s'%str(BASIS)
             raise RuntimeError      
-        Scales = np.atleast_2d(np.sqrt((BASIS**2).sum(axis=0))).T
+        Scales = np.atleast_2d(np.sqrt(np.sum((BASIS**2),axis=0))).T
         Scales[Scales==0] = 1
         
         for m in range(M):
@@ -198,8 +194,11 @@ class SparseBayes(object):
 
         return SIGMA,Mu,S_in,Q_in,S_out,Q_out,Factor,logML,Gamma,betaBASIS_PHI,beta
         
+#    def sequential_update(self,X,Targets,Scales,BASIS,PHI,BASIS_PHI,BASIS_Targets,\
+#                               Used,Alpha,beta,\
+#                               SIGMA,Mu,S_in,Q_in,S_out,Q_out,Factor,logML,Gamma,BASIS_B_PHI):
     def sequential_update(self,X,Targets,Scales,BASIS,PHI,BASIS_PHI,BASIS_Targets,\
-                               Used,Alpha,beta,Aligned_out,Aligned_in,\
+                               Used,Alpha,beta,Aligned_out,Aligned_in,align_defer_count,\
                                SIGMA,Mu,S_in,Q_in,S_out,Q_out,Factor,logML,Gamma,BASIS_B_PHI):
 #        self.appLogger.debug('sequential_update')
         # diagnosis
@@ -220,6 +219,8 @@ class SparseBayes(object):
         except ValueError:
             M = 1
 
+#        Aligned_out = np.array([])
+#        Aligned_in = np.array([])
         align_defer_count = 0
 
         i = 0;full_count = 0
@@ -679,75 +680,108 @@ class SparseBayes(object):
         Mu = Mu[index] / Scales[Used[index]]
         Alpha = Alpha[index] / Scales[Used[index]]**2
         
+#        return Used,Relevant,Mu,Alpha,beta,update_count,add_count,delete_count,full_count    
         return Used,Aligned_out,Aligned_in,align_defer_count,\
             Relevant,Mu,Alpha,beta,update_count,add_count,delete_count,full_count    
 
     def learn(self,X,Targets,basis_func,raw_BASIS=None,extendable=True):
+#    def learn(self,X,Targets,basis_func,BASIS=None,extendable=True):
+
         if raw_BASIS == None:
             raw_BASIS = basis_func(X)
+#        if BASIS == None:
+#            BASIS = basis_func(X)
         
         # initialization
+#        self.appLogger.info('Initialization')
         BASIS,Scales,Alpha,beta,Mu,PHI,Used = self.initialize(raw_BASIS.copy(),Targets)
+#        BASIS,Scales,Alpha,beta,Mu,PHI,Used = self.initialize(BASIS,Targets)
+#        print BASIS,Scales,Alpha,beta,Mu,PHI,Used
         
         BASIS_PHI = np.dot(BASIS.T,PHI)
         BASIS_Targets = np.dot(BASIS.T,Targets)
         
         # full computation
+#        self.appLogger.info('Full computation')
         SIGMA,Mu,S_in,Q_in,S_out,Q_out,Factor,logML,Gamma,BASIS_B_PHI,beta = \
         self.full_statistics(BASIS,PHI,Targets,Used,Alpha,beta,BASIS_PHI,BASIS_Targets)
         
         Aligned_out = np.array([])
         Aligned_in = np.array([])
+        align_defer_count = 0
 
+#        Used,Relevant,Mu,Alpha,beta,update_count,add_count,delete_count,full_count = \
+#        self.sequential_update(X,Targets,Scales,BASIS,PHI,BASIS_PHI,BASIS_Targets,\
+#                               Used,Alpha,beta,\
+#                               SIGMA,Mu,S_in,Q_in,S_out,Q_out,Factor,logML,Gamma,BASIS_B_PHI)
         Used,Aligned_out,Aligned_in,align_defer_count,\
         Relevant,Mu,Alpha,beta,update_count,add_count,delete_count,full_count = \
         self.sequential_update(X,Targets,Scales,BASIS,PHI,BASIS_PHI,BASIS_Targets,\
-                               Used,Alpha,beta,Aligned_out,Aligned_in,\
+                               Used,Alpha,beta,Aligned_out,Aligned_in,align_defer_count,\
                                SIGMA,Mu,S_in,Q_in,S_out,Q_out,Factor,logML,Gamma,BASIS_B_PHI)
         
         if extendable:
+#            self.X,self.Targets,self.raw_BASIS,self.BASIS,self.Used,\
+#            self.Alpha,self.beta =\
+#            X,Targets,raw_BASIS,BASIS,Used,\
+#            Alpha,beta
             self.X,self.Targets,self.raw_BASIS,self.BASIS,self.Used,\
             self.Alpha,self.beta,\
-            self.Aligned_out,self.Aligned_in =\
+            self.Aligned_out,self.Aligned_in,self.align_defer_count =\
             X,Targets,raw_BASIS,BASIS,Used,\
             Alpha,beta,\
-            Aligned_out,Aligned_in
-
+            Aligned_out,Aligned_in,align_defer_count
+#            
+#            self.X,self.Targets,self.BASIS,self.Used,\
+#            self.Alpha,self.beta,\
+#            self.Aligned_out,self.Aligned_in,self.align_defer_count =\
+#            X,Targets,BASIS,Used,\
+#            Alpha,beta,\
+#            Aligned_out,Aligned_in,align_defer_count
+        
+#        return Relevant,Mu,Alpha,beta,BASIS,update_count,add_count,delete_count,full_count
         return Relevant,Mu,Alpha,beta,update_count,add_count,delete_count,full_count
                 
     def incremental_learn(self,new_X,new_T,inc_basis_func,raw_BASIS=None,extendable=True):
+#    def incremental_learn(self,new_X,new_T,inc_basis_func,BASIS=None,extendable=True):
         try:
+#            X,Targets,raw_BASIS,BASIS,Used,\
+#            Alpha,beta = \
+#            self.X,self.Targets,self.raw_BASIS,self.BASIS,self.Used,\
+#            self.Alpha,self.beta
             X,Targets,raw_BASIS,BASIS,Used,\
             Alpha,beta,\
-            Aligned_out,Aligned_in = \
+            Aligned_out,Aligned_in,align_defer_count = \
             self.X,self.Targets,self.raw_BASIS,self.BASIS,self.Used,\
             self.Alpha,self.beta,\
-            self.Aligned_out,self.Aligned_in
+            self.Aligned_out,self.Aligned_in,self.align_defer_count
+
+#            X,Targets,BASIS,Used,\
+#            Alpha,beta,\
+#            Aligned_out,Aligned_in,align_defer_count = \
+#            self.X,self.Targets,self.BASIS,self.Used,\
+#            self.Alpha,self.beta,\
+#            self.Aligned_out,self.Aligned_in,self.align_defer_count
+#        except NameError:
         except:
             return self.learn(new_X,new_T,inc_basis_func,raw_BASIS=raw_BASIS)
+#            return self.learn(new_X,new_T,inc_basis_func,BASIS=BASIS)
+#            print "First, use 'learn' method with extendable=True"
 
 #        X = np.vstack((X,new_X))
         X += new_X
         Targets = np.vstack((Targets,new_T))
         
-        self.appLogger.info('CONTROL_BasisFunctionMax %d'%self.CONTROL_BasisFunctionMax)
         if len(X) > self.CONTROL_BasisFunctionMax and len(Used) > 1:
-            i = 0
-            if self.CONTROL_DiscardRedundantBasis:
-                while i < len(X) and (i in Used) and (i in Aligned_in):
-                    i += 1
+            X.pop(0)
+            raw_BASIS = np.delete(raw_BASIS,0,0)
+            raw_BASIS = np.delete(raw_BASIS,0,1)
 
-            X.pop(i)
-            Targets = np.delete(Targets,i,0)
-            
-            if i == len(X): 
-                self.appLogger.info('Return due to the discard of the last data')
-                return self.Relevant,self.Mu,self.Alpha,self.beta,0,0,0,0
+            Targets = np.delete(Targets,0,0)
 
-            raw_BASIS = np.delete(raw_BASIS,i,0)
-            raw_BASIS = np.delete(raw_BASIS,i,1)
-
-            find_Aligned = (Aligned_in == i).nonzero()
+#            self.appLogger.info('Aligned_out: %s'%str(Aligned_out))
+#            self.appLogger.info('Aligned_in: %s'%str(Aligned_in))
+            find_Aligned = (Aligned_in == np.array([0])).nonzero()
             num_Aligned = find_Aligned[0].size
             if num_Aligned > 0:
                 self.appLogger.info('By limit on max basis vectors, alignment reinstatement of %s'%str(Aligned_out[find_Aligned]))
@@ -755,7 +789,7 @@ class SparseBayes(object):
                 Aligned_out = np.delete(Aligned_out,find_Aligned)
 #                self.appLogger.info('Aligned_out: %s'%str(Aligned_out))
 #                self.appLogger.info('Aligned_in: %s'%str(Aligned_in))
-            find_Aligned = (Aligned_out == i).nonzero()
+            find_Aligned = (Aligned_out == np.array([0])).nonzero()
             num_Aligned = find_Aligned[0].size
             if num_Aligned > 0:
                 self.appLogger.info('By limit on max basis vectors, delete alignment of [0]')
@@ -763,66 +797,68 @@ class SparseBayes(object):
                 Aligned_out = np.delete(Aligned_out,find_Aligned)
 #                self.appLogger.info('Aligned_out: %s'%str(Aligned_out))
 #                self.appLogger.info('Aligned_in: %s'%str(Aligned_in))
-            Aligned_in[Aligned_in >= i] -= 1
-            Aligned_out[Aligned_out >= i] -= 1
+            Aligned_in -= 1
+            Aligned_out -= 1
 #            self.appLogger.info('Aligned_out: %s'%str(Aligned_out))
 #            self.appLogger.info('Aligned_in: %s'%str(Aligned_in))
 
             self.appLogger.info('Shrink Used(%d) %s'%(len(Used),str(Used)))
-            index = (Used == i).nonzero()
+            Used -= 1
+            index = (Used == -1).nonzero()
             Used = np.delete(Used,index)
-            Used[Used >= i] -= 1
             Alpha = np.atleast_2d(np.delete(Alpha,index)).T
             self.appLogger.info('to(%d) %s'%(len(Used),str(Used)))
             
         raw_BASIS = inc_basis_func(X,raw_BASIS)
+#        BASIS = inc_basis_func(X,BASIS)
             
         # pre-process
+#        self.appLogger.info('Pre-process')
         BASIS,Scales = self.preprocess(raw_BASIS.copy())
+#        BASIS,Scales = self.preprocess(BASIS)
         
         PHI = BASIS[:,Used]
+#        print BASIS,Scales,Alpha,beta,Mu,PHI,Used
         
         BASIS_PHI = np.dot(BASIS.T,PHI)
         BASIS_Targets = np.dot(BASIS.T,Targets)
         
         # full computation
+#        self.appLogger.info('Full computation') 
         SIGMA,Mu,S_in,Q_in,S_out,Q_out,Factor,logML,Gamma,BASIS_B_PHI,beta = \
         self.full_statistics(BASIS,PHI,Targets,Used,Alpha,beta,BASIS_PHI,BASIS_Targets)
         
+#        Used,Relevant,Mu,Alpha,beta,update_count,add_count,delete_count,full_count = \
+#        self.sequential_update(X,Targets,Scales,BASIS,PHI,BASIS_PHI,BASIS_Targets,\
+#                               Used,Alpha,beta,\
+#                               SIGMA,Mu,S_in,Q_in,S_out,Q_out,Factor,logML,Gamma,BASIS_B_PHI)
         Used,Aligned_out,Aligned_in,align_defer_count,\
         Relevant,Mu,Alpha,beta,update_count,add_count,delete_count,full_count = \
         self.sequential_update(X,Targets,Scales,BASIS,PHI,BASIS_PHI,BASIS_Targets,\
-                               Used,Alpha,beta,Aligned_out,Aligned_in,\
+                               Used,Alpha,beta,Aligned_out,Aligned_in,align_defer_count,\
                                SIGMA,Mu,S_in,Q_in,S_out,Q_out,Factor,logML,Gamma,BASIS_B_PHI)
 
         if extendable:
+#            self.X,self.Targets,self.raw_BASIS,self.BASIS,self.Used,\
+#            self.Alpha,self.beta =\
+#            X,Targets,raw_BASIS,BASIS,Used,\
+#            Alpha,beta
             self.X,self.Targets,self.raw_BASIS,self.BASIS,self.Used,\
             self.Alpha,self.beta,\
-            self.Aligned_out,self.Aligned_in,\
-            self.Relevant,self.Mu =\
+            self.Aligned_out,self.Aligned_in,self.align_defer_count =\
             X,Targets,raw_BASIS,BASIS,Used,\
             Alpha,beta,\
-            Aligned_out,Aligned_in,\
-            Relevant,Mu
-
+            Aligned_out,Aligned_in,align_defer_count
+#                        
+#            self.X,self.Targets,self.BASIS,self.Used,\
+#            self.Alpha,self.beta,\
+#            self.Aligned_out,self.Aligned_in,self.align_defer_count =\
+#            X,Targets,BASIS,Used,\
+#            Alpha,beta,\
+#            Aligned_out,Aligned_in,align_defer_count
+        
+#        return Relevant,Mu,Alpha,beta,BASIS,update_count,add_count,delete_count,full_count
         return Relevant,Mu,Alpha,beta,update_count,add_count,delete_count,full_count
-    
-    def get_present_learning_status(self):
-        return self.X,self.Targets,self.raw_BASIS,self.BASIS,self.Used,\
-            self.Alpha,self.beta,\
-            self.Aligned_out,self.Aligned_in,\
-            self.Relevant,self.Mu
-            
-    def set_learning_status(self,X,Targets,raw_BASIS,BASIS,Used,
-            Alpha,beta,Aligned_out,Aligned_in,Relevant,Mu): 
-        self.X,self.Targets,self.raw_BASIS,self.BASIS,self.Used,\
-            self.Alpha,self.beta,\
-            self.Aligned_out,self.Aligned_in,\
-            self.Relevant,self.Mu =\
-            X,Targets,raw_BASIS,BASIS,Used,\
-            Alpha,beta,\
-            Aligned_out,Aligned_in,\
-            Relevant,Mu
                 
     def get_basis_size(self):
         try: 
