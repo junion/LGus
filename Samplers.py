@@ -4,7 +4,7 @@
 @type _version: String
 """
 
-from gPy.Models import BN
+from Models import BN
 import random
 
 _version = '$Id: Samplers.py,v 1.6 2008/10/07 09:14:21 jc Exp $'
