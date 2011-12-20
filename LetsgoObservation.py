@@ -3,6 +3,18 @@ from Parameters import Factor
 import LetsgoSerializer as ls
 from SparseBayes import SparseBayes
 
+sbr_models = {'I:bn':ls.load_model('_calibrated_confidence_score_sbr_bn.model'),\
+                  'I:dp':ls.load_model('_calibrated_confidence_score_sbr_dp.model'),\
+                  'I:ap':ls.load_model('_calibrated_confidence_score_sbr_ap.model'),\
+                  'I:tt':ls.load_model('_calibrated_confidence_score_sbr_tt.model'),\
+                  'yes':ls.load_model('_calibrated_confidence_score_sbr_yes.model'),\
+                  'no':ls.load_model('_calibrated_confidence_score_sbr_no.model'),\
+                  'multi2':ls.load_model('_calibrated_confidence_score_sbr_multi2.model'),\
+                  'multi3':ls.load_model('_calibrated_confidence_score_sbr_multi3.model'),\
+                  'multi4':ls.load_model('_calibrated_confidence_score_sbr_multi4.model')
+                  }
+
+
 def Calibrate(sbr_models,ua,cs):
     def dist_squared(X,Y):
         nx = X.shape[0]
@@ -35,23 +47,12 @@ def Calibrate(sbr_models,ua,cs):
                                     sbr_model['weights'])[0,0]
         if calibrated_cs < 0: 
             calibrated_cs = 0
-        return calibrated_cs
+        return float(calibrated_cs)
     return cs
 
 #def getObsFactor(turn,ceiling=1.0,p=1.5,use_cs=False,cs_weight=0.8):
 def getObsFactor(turn,ceiling=1.0,p=1.5,use_cs=False,cs_weight=0.99999):
     
-    sbr_models = {'I:bn':ls.load_model('_calibrated_confidence_score_sbr_bn.model'),\
-                      'I:dp':ls.load_model('_calibrated_confidence_score_sbr_dp.model'),\
-                      'I:ap':ls.load_model('_calibrated_confidence_score_sbr_ap.model'),\
-                      'I:tt':ls.load_model('_calibrated_confidence_score_sbr_tt.model'),\
-                      'yes':ls.load_model('_calibrated_confidence_score_sbr_yes.model'),\
-                      'no':ls.load_model('_calibrated_confidence_score_sbr_no.model'),\
-                      'multi2':ls.load_model('_calibrated_confidence_score_sbr_multi2.model'),\
-                      'multi3':ls.load_model('_calibrated_confidence_score_sbr_multi3.model'),\
-                      'multi4':ls.load_model('_calibrated_confidence_score_sbr_multi4.model')
-                      }
-
 #    if turn['UA'] == ['non-understanding']:
 #        eps += 0.1
     fUAtt_Ott = Factor(('UA_tt',))
@@ -75,9 +76,9 @@ def getObsFactor(turn,ceiling=1.0,p=1.5,use_cs=False,cs_weight=0.99999):
     if use_cs: 
         cs = turn['CS']
 #        print turn['UA']
-#        print cs
+#        print type(cs),cs
         cs = Calibrate(sbr_models,turn['UA'],cs)
-#        print cs
+#        print type(cs),cs
         
     else: cs = 0.99
     cs = cs*cs_weight
@@ -88,11 +89,6 @@ def getObsFactor(turn,ceiling=1.0,p=1.5,use_cs=False,cs_weight=0.99999):
             cs*(float(len(set(ua).intersection(set(turn['UA']))))/len(set(ua).union(set(turn['UA']))))**p,\
             ceiling)\
              + eps
-
-
-
-
-
 
 #        print set(ua).intersection(set(turn['UA']))
 #        print set(ua).union(set(turn['UA']))
