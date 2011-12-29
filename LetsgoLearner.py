@@ -180,13 +180,13 @@ class LetsgoErrorModelLearner(object):
         self.cm_tt = {}
         self.cm_ua_template = [{} for c in range(7)]
         self.q_class = {0:0,1:0,2:0,3:0,4:0,5:0,6:0}
-        self.co_cs = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],\
+        self.co_cs = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],'correction':[],\
                       'multi':[],'multi2':[],'multi3':[],'multi4':[],'multi5':[]} for c in range(7)]
-        self.inco_cs = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],\
+        self.inco_cs = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],'correction':[],\
                       'multi':[],'multi2':[],'multi3':[],'multi4':[],'multi5':[]} for c in range(7)]
         self.prep = prep
     
-    def learn(self):
+    def learn(self,make_correction_model=False):
         Variables.clear_default_domain()
         Variables.set_default_domain({'H_bn_t':lv.H_bn,'H_dp_t':lv.H_dp,'H_ap_t':lv.H_ap,\
                                       'H_tt_t':lv.H_tt,'UA_tt':lv.UA,'H_bn_tt':lv.H_bn,\
@@ -328,10 +328,16 @@ class LetsgoErrorModelLearner(object):
                                 inco_cs['no'].append(turn['CS'])
                 else:
                     try:
-                        if ','.join(obs_ua_template).find(':x') > -1:
-                            inco_cs['multi%d'%len(obs_ua_template)].append(turn['CS'])
-                        else:
-                            co_cs['multi%d'%len(obs_ua_template)].append(turn['CS'])
+                        if make_correction_model and len(obs_ua_template) == 2 and 'no' in obs_ua_template:
+                            if ','.join(obs_ua_template).find(':x') > -1:
+                                inco_cs['correction'].append(turn['CS'])
+                            else:
+                                co_cs['correction'%len(obs_ua_template)].append(turn['CS'])
+                        else:    
+                            if ','.join(obs_ua_template).find(':x') > -1:
+                                inco_cs['multi%d'%len(obs_ua_template)].append(turn['CS'])
+                            else:
+                                co_cs['multi%d'%len(obs_ua_template)].append(turn['CS'])
                     except:
                         print len(obs_ua_template)
 

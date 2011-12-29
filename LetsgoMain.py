@@ -223,6 +223,160 @@ def show_obs_sbr():
         except (ValueError,RuntimeError) as e:
             print e
 
+def make_obs_sbr_with_correction():
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from copy import deepcopy
+    import statistics 
+    import LetsgoSerializer as ls
+    from SparseBayes import SparseBayes
+    from GlobalConfig import InitConfig,GetConfig
+    import LetsgoLearner as ll
+
+    err_learner = ll.LetsgoErrorModelLearner('E:/Data/Recent',prep=True)
+    err_learner.learn(True)
+
+
+    InitConfig()
+    config = GetConfig()
+    config.read(['LGus.conf'])
+
+
+    dimension = 1
+#    basisWidth = 0.05
+#    basisWidth = basisWidth**(1/dimension)
+        
+    def dist_squared(X,Y):
+        import numpy as np
+        nx = X.shape[0]
+        ny = Y.shape[0]
+        
+        return np.dot(np.atleast_2d(np.sum((X**2),1)).T,np.ones((1,ny))) + \
+            np.dot(np.ones((nx,1)),np.atleast_2d(np.sum((Y**2),1))) - 2*np.dot(X,Y.T);
+    
+    def basis_func(X,basisWidth):
+        import numpy as np
+        C = X.copy()
+        BASIS = np.exp(-dist_squared(X,C)/(basisWidth**2))
+        return BASIS
+
+    def basis_vector(X,x,basisWidth):
+        import numpy as np
+        BASIS = np.exp(-dist_squared(x,X)/(basisWidth**2))
+        return BASIS
+    
+    total_co_cs = None
+    total_inco_cs = None
+    for c in range(7):
+        co_cs = ls.load_model('_correct_confidence_score_class_%d.model'%c)
+        inco_cs = ls.load_model('_incorrect_confidence_score_class_%d.model'%c)
+
+        if total_co_cs == None:
+            total_co_cs = deepcopy(co_cs)
+            total_inco_cs = deepcopy(inco_cs)
+        else:
+            for k in co_cs.keys():
+                total_co_cs[k].extend(co_cs[k])
+                total_inco_cs[k].extend(inco_cs[k])
+    
+    #    plt.subplot(121)   
+    title = {'multi':'Total of multiple actions',\
+             'multi2': 'Two actions',\
+             'multi3': 'Three actions',\
+             'multi4': 'Four actions',\
+             'multi5': 'Five actions',\
+             'total': 'Global',\
+             'yes': 'Affirm',\
+             'no': 'Deny',\
+             'correction': 'Correction',\
+             'bn': 'Bus number',\
+             'dp': 'Departure place',\
+             'ap': 'Arrival place',\
+             'tt': 'Travel time',\
+             'single': 'Total of single actions'
+             }
+    for k in total_co_cs.keys():
+        if not k in ['yes','no','correction','bn','dp','ap','tt','multi2','multi3','multi4','multi5']:
+            continue
+        co = total_co_cs[k]
+        inco = total_inco_cs[k]
+        
+        print 'length of correct: ',len(co)
+        print 'length of incorrect: ',len(inco)
+        
+#        n,bins,patches = plt.hist([co,inco],bins=np.arange(0.0,1.1,0.1),\
+#                                  normed=0,color=['green','yellow'],\
+#                                  label=['Correct','Incorrect'],alpha=0.75)
+    
+        try:
+            x_co = np.arange(0,1.001,0.001)
+            x_inco = np.arange(0,1.001,0.001)
+            h_co = statistics.bandwidth(np.array(co),weight=None,kernel='Gaussian')
+            print 'bandwidth of correct: ',h_co
+#            y_co,x_co = statistics.pdf(np.array(co),kernel='Gaussian',n=1000)
+            y_co = statistics.pdf(np.array(co),x=x_co,kernel='Gaussian')
+            print 'length of correct: ',len(x_co)
+            h_inco = statistics.bandwidth(np.array(inco),weight=None,kernel='Gaussian')
+            print 'bandwidth of incorrect: ',h_inco
+#            y_inco,x_inco = statistics.pdf(np.array(inco),kernel='Gaussian',n=1000)
+            y_inco = statistics.pdf(np.array(inco),x=x_inco,kernel='Gaussian')
+            print 'length of incorrect: ',len(x_inco)
+            
+            y_co += 1e-10
+            y_inco = y_inco*(float(len(inco))/len(co)) + 1e-10
+    
+            y_co_max = np.max(y_co)
+            print 'max of correct: ',y_co_max
+            y_inco_max = np.max(y_inco)
+            print 'max of incorrect: ',y_inco_max
+            y_max = max([y_co_max,y_inco_max])
+            print 'max of total: ',y_max         
+            plt.plot(x_co,y_co/y_max,'g.-',alpha=0.75)
+            plt.plot(x_inco,y_inco/y_max,'r.-',alpha=0.75)
+            print x_co
+            print x_inco
+            y = y_co/(y_co + y_inco)
+            plt.plot(x_co,y,'b--',alpha=0.75)
+
+            m = SparseBayes()
+            X = np.atleast_2d(x_co).T
+            Y = np.atleast_2d(y).T
+            basisWidth=min([h_co,h_inco])
+            BASIS = basis_func(X,basisWidth)
+            try:   
+                Relevant,Mu,Alpha,beta,update_count,add_count,delete_count,full_count = \
+                m.learn(X,Y,lambda x: basis_func(x,basisWidth))
+                ls.store_model({'data_points':X[Relevant],'weights':Mu,'basis_width':basisWidth},\
+                               '_calibrated_confidence_score_sbr_%s.model'%k)
+            except RuntimeError as e:
+                print e
+            w_infer = np.zeros((BASIS.shape[1],1))
+            w_infer[Relevant] = Mu 
+            
+            Yh = np.dot(BASIS[:,Relevant],Mu)
+            e = Yh - Y
+            ED = np.dot(e.T,e)
+            
+            print 'ED: %f'%ED
+            
+            print np.dot(basis_vector(X[Relevant],np.ones((1,1))/2,basisWidth),Mu)
+            
+            
+            plt.plot(X.ravel(),Yh.ravel(),'yo-',alpha=0.75)
+
+    #        plt.legend(loc='upper center')
+            plt.xlabel('Confidence Score')
+            plt.ylabel('Count')
+            plt.title(title[k])
+    #        if k == 'multi5':
+    #            plt.axis([0,1,0,1.2])
+    #        elif k == 'multi4':
+    #            plt.axis([0,1,0,10])
+            plt.grid(True)
+            plt.show()
+        except (ValueError,RuntimeError) as e:
+            print e
+
 def show_cs():
     import numpy as np
     import matplotlib.pyplot as plt
@@ -375,10 +529,10 @@ def extract_usr_model():
 if __name__ == "__main__":
 #    preprocess()
 #    show_obs_sbr()
-    training()
-    goal_table()
-    extract_usr_model()
-
+#    training()
+#    goal_table()
+#    extract_usr_model()
+    make_obs_sbr_with_correction()
 #    batch_simulation()
 
 #    interactive_simulation()
