@@ -1,4 +1,4 @@
-import time,math,operator
+import sys,time,math,operator
 import Variables
 from Parameters import Factor
 from Models import SFR, JFR, CPT
@@ -16,7 +16,7 @@ class LetsgoIntentionModelLearner(object):
         self.iter = iter
         self.tol = tol
         self.inc = inc
-        self.learners = {'EM':self.EM_learn}
+        self.learners = {'EM':self.EM_learn,'VB':self.VB_learn}
         self.prep = prep
         
     def _reset_param(self):
@@ -91,8 +91,115 @@ class LetsgoIntentionModelLearner(object):
                 ess[('_factor_%s_%s.model'%(factor['G_bn'],factor['SA'])).replace(':','-')] = \
                 Factor(('H_bn_t','H_dp_t','H_ap_t','H_tt_t','UA_tt'))
                 ess[('_factor_%s_%s.model'%(factor['G_bn'],factor['SA'])).replace(':','-')][:] = \
-                [0.0000000000000001] * len(ess[('_factor_%s_%s.model'%(factor['G_bn'],factor['SA'])).replace(':','-')][:])
+                [sys.float_info.min] * len(ess[('_factor_%s_%s.model'%(factor['G_bn'],factor['SA'])).replace(':','-')][:])
+#                ess[('_factor_%s_%s.model'%(factor['G_bn'],factor['SA'])).replace(':','-')].zero()
 
+            for d, dialog in enumerate(lc.Corpus(self.data,prep=self.prep).dialogs()):
+                if len(dialog.turns) > 40:
+                    continue
+                
+                print 'processing dialog #%d...'%d
+            
+                Variables.change_variable('H_bn_0',lv.H_bn)
+                Variables.change_variable('H_dp_0',lv.H_dp)
+                Variables.change_variable('H_ap_0',lv.H_ap)
+                Variables.change_variable('H_tt_0',lv.H_tt)
+            
+                dialog_factors = []
+                for t, turn in enumerate(dialog.abs_turns):
+                    tmp_fHt_UAtt_Htt = Factor(('H_bn_%s'%t,'H_dp_%s'%t,'H_ap_%s'%t,'H_tt_%s'%t,\
+                                               'UA_%s'%(t+1),'H_bn_%s'%(t+1),'H_dp_%s'%(t+1),\
+                                               'H_ap_%s'%(t+1),'H_tt_%s'%(t+1)),
+                            new_domain_variables={'UA_%s'%(t+1):lv.UA,'H_bn_%s'%(t+1):lv.H_bn,\
+                                                  'H_dp_%s'%(t+1):lv.H_dp,'H_ap_%s'%(t+1):lv.H_ap,\
+                                                  'H_tt_%s'%(t+1):lv.H_tt})
+                    tmp_fHt_UAtt_Htt[:] = fHt_UAtt_Htt[:]
+            #            tmp_fHt_UAtt_Htt = fHt_UAtt_Htt.copy_rename({'H_bn_t':'H_bn_%s'%i,'H_dp_t':'H_dp_%s'%i,'H_ap_t':'H_ap_%s'%i,'H_tt_t':'H_tt_%s'%i,'UA_tt':'UA_%s'%(i+1),'H_bn_tt':'H_bn_%s'%(i+1),'H_dp_tt':'H_dp_%s'%(i+1),'H_ap_tt':'H_ap_%s'%(i+1),'H_tt_tt':'H_tt_%s'%(i+1)})            
+                    tmp_fGbn_Ht_SAtt_UAtt = Factor(('H_bn_%s'%t,'H_dp_%s'%t,'H_ap_%s'%t,'H_tt_%s'%t,'UA_%s'%(t+1)))
+            #            tmp_fGbn_Ht_SAtt_UAtt = Factor(('H_bn_%s'%i,'H_dp_%s'%i,'H_ap_%s'%i,'H_tt_%s'%i,'UA_%s'%(i+1)),new_domain_variables={'UA_%s'%(i+1):UA,'H_bn_%s'%i:H_bn,'H_dp_%s'%i:H_dp,'H_ap_%s'%i:H_ap,'H_tt_%s'%i:H_tt})
+                    try:
+                        tmp_fGbn_Ht_SAtt_UAtt[:] = \
+                        ls.load_model(('_factor_%s_%s.model'%(dialog.abs_goal['G_bn'],turn['SA'][0])).replace(':','-'))[:]
+                    except:
+                        print ('Error:cannot find _factor_%s_%s.model'%(dialog.abs_goal['G_bn'],turn['SA'][0])).replace(':','-')
+                        exit()
+                    tmp_fUAtt_Ott = Factor(('UA_%s'%(t+1),))
+                    tmp_fUAtt_Ott[:] = lo.getObsFactor(turn,use_cs=True)[:]
+                    factor = tmp_fHt_UAtt_Htt * tmp_fGbn_Ht_SAtt_UAtt * tmp_fUAtt_Ott
+                    dialog_factors.append(factor.copy(copy_domain=True))
+                
+                jfr = JFR(SFR(dialog_factors))
+                jfr.condition({'H_bn_0':'x','H_dp_0':'x','H_ap_0':'x','H_tt_0':'x'})
+                jfr.calibrate()
+                
+                for t, turn in enumerate(dialog.abs_turns):
+                    rf = jfr.factors_containing_variable('UA_%s'%(t+1))
+                    from operator import add
+                    if t == 0:
+                        for inst in Utils.inst_filling({'H_bn_t':['x'],'H_dp_t':['x'],\
+                                                        'H_ap_t':['x'],'H_tt_t':['x'],'UA_tt':lv.UA}):
+                            ess[('_factor_%s_%s.model'%(dialog.abs_goal['G_bn'],turn['SA'][0])).replace(':','-')][inst] += \
+                            rf[0].copy().marginalise_onto(['UA_1']).normalised()[{'UA_1':inst['UA_tt']}]
+                        loglik += math.log(rf[0].copy().z())
+                        print 'dialog loglik: %e'%loglik
+                    else:  
+                        ess[('_factor_%s_%s.model'%(dialog.abs_goal['G_bn'],turn['SA'][0])).replace(':','-')][:] =\
+                        map(add,ess[('_factor_%s_%s.model'%(dialog.abs_goal['G_bn'],turn['SA'][0])).replace(':','-')][:],\
+                            rf[0].copy().marginalise_onto(['H_bn_%s'%t,'H_dp_%s'%t,'H_ap_%s'%t,\
+                                                           'H_tt_%s'%t,'UA_%s'%(t+1)]).normalised()[:])
+                    
+            print 'Writing parameters...'
+            factor_template = {'G_bn':lv.G_bn,'SA':lv.SA}
+            for factor in Utils.inst_filling(factor_template):
+                factor = ('_factor_%s_%s.model'%(factor['G_bn'],factor['SA'])).replace(':','-')
+                ls.store_model(CPT(ess[factor],child='UA_tt',cpt_force=True),factor)
+            
+            relgain = ((loglik - prevloglik)/math.fabs(prevloglik))
+            print 'prevloglik: %e'%prevloglik
+            print 'loglik: %e'%loglik
+            print 'relgain: %e'%relgain
+        
+            if relgain < self.tol:
+                break
+            
+            prevloglik = loglik
+            loglik = 0.0
+        
+        print 'Parameter learning done'    
+        
+        end_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+        
+        print 'Start time: %s'%start_time
+        print 'End time: %s'%end_time
+
+    def VB_learn(self):
+        print 'Parameter learning start...'
+        start_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+        
+        if not self.inc:
+            self._reset_param()
+        else:
+            Variables.clear_default_domain()
+            Variables.set_default_domain({'H_bn_t':lv.H_bn,'H_dp_t':lv.H_dp,'H_ap_t':lv.H_ap,\
+                                          'H_tt_t':lv.H_tt,'UA_tt':lv.UA,'H_bn_tt':lv.H_bn,\
+                                          'H_dp_tt':lv.H_dp,'H_ap_tt':lv.H_ap,'H_tt_tt':lv.H_tt,\
+                                          'H_bn_0':lv.H_bn,'H_dp_0':lv.H_dp,'H_ap_0':lv.H_ap,\
+                                          'H_tt_0':lv.H_tt})
+
+        fHt_UAtt_Htt = ls.load_model('_factor_Ht_UAtt_Htt.model')
+        
+        prevloglik = -1000000000000000
+        loglik = 0.0
+        for i in range(self.iter):
+            print 'Iterate %d'%i
+            ess = {}
+            factor_template = {'G_bn':lv.G_bn,'SA':lv.SA}
+            for factor in Utils.inst_filling(factor_template):
+                ess[('_factor_%s_%s.model'%(factor['G_bn'],factor['SA'])).replace(':','-')] = \
+                Factor(('H_bn_t','H_dp_t','H_ap_t','H_tt_t','UA_tt'))
+                ess[('_factor_%s_%s.model'%(factor['G_bn'],factor['SA'])).replace(':','-')][:] = \
+                [1.0] * len(ess[('_factor_%s_%s.model'%(factor['G_bn'],factor['SA'])).replace(':','-')][:])
+                
             for d, dialog in enumerate(lc.Corpus(self.data,prep=self.prep).dialogs()):
                 if len(dialog.turns) > 40:
                     continue

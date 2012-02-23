@@ -1,7 +1,7 @@
 
 def preprocess():
     import LetsgoCorpus as lc
-    corpus = lc.Corpus('E:/Data/Recent')
+    corpus = lc.Corpus('H:\Data')
     corpus.preprocess()
 #    corpus2 = lc.Corpus('G:/data/LetsGoPublic2/20070616/',prep=True)
 #    for dialog in corpus2.dialogs():
@@ -10,17 +10,17 @@ def preprocess():
 def training():
     import LetsgoLearner as ll
 
-    int_learner = ll.LetsgoIntentionModelLearner('E:/Data/Recent',prep=True)
+    int_learner = ll.LetsgoIntentionModelLearner('H:\Data',method='EM',prep=True)
     int_learner.learn()
     
-    err_learner = ll.LetsgoErrorModelLearner('E:/Data/Recent',prep=True)
-    err_learner.learn()
+#    err_learner = ll.LetsgoErrorModelLearner('H:\Data',prep=True)
+#    err_learner.learn()
 
 def batch_simulation():
     import LetsgoCorpus as lc
     import LetsgoSimulator as ls
 
-    corpus = lc.Corpus('E:/Data/Recent',prep=True)
+    corpus = lc.Corpus('H:\Data',prep=True)
     simulator = ls.IntentionSimulator()
     
     for dialog in corpus.dialogs():
@@ -33,7 +33,7 @@ def batch_simulation():
 def goal_table():
     import LetsgoSimulator as ls
     
-    gg = ls.GoalGenerator(data='E:/Data/Recent',init=True,prep=True)
+    gg = ls.GoalGenerator(data='H:\Data',init=True,prep=True)
 #    gg.show_goal_table()
     print gg.goal()
  
@@ -219,7 +219,9 @@ def show_obs_sbr():
     #        elif k == 'multi4':
     #            plt.axis([0,1,0,10])
             plt.grid(True)
-            plt.show()
+            plt.savefig(title[k]+'.png')
+#            plt.show()
+            plt.clf()
         except (ValueError,RuntimeError) as e:
             print e
 
@@ -233,8 +235,8 @@ def make_obs_sbr_with_correction():
     from GlobalConfig import InitConfig,GetConfig
     import LetsgoLearner as ll
 
-    err_learner = ll.LetsgoErrorModelLearner('E:/Data/Recent',prep=True)
-    err_learner.learn(True)
+#    err_learner = ll.LetsgoErrorModelLearner('E:/Data/Recent',prep=True)
+#    err_learner.learn(True)
 
 
     InitConfig()
@@ -373,7 +375,9 @@ def make_obs_sbr_with_correction():
     #        elif k == 'multi4':
     #            plt.axis([0,1,0,10])
             plt.grid(True)
-            plt.show()
+            plt.savefig(title[k]+'.png')
+#            plt.show()
+            plt.clf()
         except (ValueError,RuntimeError) as e:
             print e
 
@@ -528,11 +532,11 @@ def extract_usr_model():
           
 if __name__ == "__main__":
 #    preprocess()
+    training()
 #    show_obs_sbr()
-#    training()
 #    goal_table()
 #    extract_usr_model()
-    make_obs_sbr_with_correction()
+#    make_obs_sbr_with_correction()
 #    batch_simulation()
 
 #    interactive_simulation()
