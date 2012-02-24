@@ -1,3 +1,7 @@
+def corpus_dump():
+    import LetsgoCorpus as lc
+    corpus = lc.Corpus('E:/Data/tmp')
+    corpus.dump()
 
 def preprocess():
     import LetsgoCorpus as lc
@@ -531,8 +535,9 @@ def extract_usr_model():
     print 'Done'
           
 if __name__ == "__main__":
+    corpus_dump()
 #    preprocess()
-    training()
+#    training()
 #    show_obs_sbr()
 #    goal_table()
 #    extract_usr_model()

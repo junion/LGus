@@ -282,13 +282,18 @@ class LetsgoIntentionModelLearner(object):
 class LetsgoErrorModelLearner(object):
     def __init__(self,data,prep=False):
         self.data = data
+        # confusion matrix for concept value maintaining counts of confusion from goal value to recognized value 
         self.cm_bn = {}
         self.cm_p = {}
         self.cm_tt = {}
+        # confusion matrix for user action template
         self.cm_ua_template = [{} for c in range(7)]
+        # error rate class
         self.q_class = {0:0,1:0,2:0,3:0,4:0,5:0,6:0}
+        # confidence score for correct value
         self.co_cs = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],'correction':[],\
                       'multi':[],'multi2':[],'multi3':[],'multi4':[],'multi5':[]} for c in range(7)]
+        # confidence score for incorrect value
         self.inco_cs = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],'correction':[],\
                       'multi':[],'multi2':[],'multi3':[],'multi4':[],'multi5':[]} for c in range(7)]
         self.prep = prep
@@ -359,7 +364,8 @@ class LetsgoErrorModelLearner(object):
                 obs_ua_template = []
                 for act in turn['UA']:
                     if act.find('I:bn') == 0:# and max_ua.find('I:bn') > -1 and not dialog.goal['G_bn'] == '':
-                        if dialog.goal['G_bn'] == act.split(':')[-1]: obs_ua_template.append('I:bn:o')
+                        if dialog.goal['G_bn'] == act.split(':')[-1]: 
+                            obs_ua_template.append('I:bn:o')
                         else: 
                             obs_ua_template.append('I:bn:x')
                             try:
@@ -368,7 +374,8 @@ class LetsgoErrorModelLearner(object):
                                 try: self.cm_bn[dialog.goal['G_bn']][act.split(':')[-1]] = 1
                                 except: self.cm_bn[dialog.goal['G_bn']] = {act.split(':')[-1]:1}
                     elif act.find('I:dp') == 0:# and max_ua.find('I:dp') > -1 and not dialog.goal['G_dp'] == '':
-                        if dialog.goal['G_dp'] == act.split(':')[-1]: obs_ua_template.append('I:dp:o')
+                        if dialog.goal['G_dp'] == act.split(':')[-1]: 
+                            obs_ua_template.append('I:dp:o')
                         else: 
                             obs_ua_template.append('I:dp:x')
                             try:
@@ -377,7 +384,8 @@ class LetsgoErrorModelLearner(object):
                                 try: self.cm_p[dialog.goal['G_dp']][act.split(':')[-1]] = 1
                                 except: self.cm_p[dialog.goal['G_dp']] = {act.split(':')[-1]:1}
                     elif act.find('I:ap') == 0:# and max_ua.find('I:ap') > -1 and not dialog.goal['G_ap'] == '':
-                        if dialog.goal['G_ap'] == act.split(':')[-1]: obs_ua_template.append('I:ap:o')
+                        if dialog.goal['G_ap'] == act.split(':')[-1]: 
+                            obs_ua_template.append('I:ap:o')
                         else: 
                             obs_ua_template.append('I:ap:x')
                             try:
@@ -386,7 +394,8 @@ class LetsgoErrorModelLearner(object):
                                 try: self.cm_p[dialog.goal['G_ap']][act.split(':')[-1]] = 1
                                 except: self.cm_p[dialog.goal['G_ap']] = {act.split(':')[-1]:1}
                     elif act.find('I:tt') == 0:# and max_ua.find('I:tt') > -1 and not dialog.goal['G_tt'] == '':
-                        if dialog.goal['G_tt'] == act.split(':')[-1]: obs_ua_template.append('I:tt:o')
+                        if dialog.goal['G_tt'] == act.split(':')[-1]: 
+                            obs_ua_template.append('I:tt:o')
                         else: 
                             obs_ua_template.append('I:tt:x')
                             try:

@@ -15,6 +15,8 @@ UA = ('I:ap,I:bn,I:dp,I:tt',\
       'I:ap,I:dp,I:tt',\
       'I:bn,I:dp,I:tt',\
       'I:ap,I:dp',\
+      'I:dp,I:tt',\
+      'I:ap,I:tt',\
       'I:bn,I:tt',\
       'I:bn',\
       'I:dp',\
@@ -22,6 +24,10 @@ UA = ('I:ap,I:bn,I:dp,I:tt',\
       'I:tt',\
       'yes',\
       'no',\
+      'no,I:bn',\
+      'no,I:dp',\
+      'no,I:ap',\
+      'no,I:tt',\
       'non-understanding'\
       )
 
@@ -30,9 +36,14 @@ SA = ('R:open',\
       'R:dp',\
       'R:ap',\
       'R:tt',\
-      'C:o',\
-      'C:x',\
-      'C:-',\
+      'C:bn:o',\
+      'C:bn:x',\
+      'C:dp:o',\
+      'C:dp:x',\
+      'C:ap:o',\
+      'C:ap:x',\
+      'C:tt:o',\
+      'C:tt:x',\
       'O:-'\
       )
 

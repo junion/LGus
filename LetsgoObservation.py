@@ -61,6 +61,8 @@ def getObsFactor(turn,ceiling=1.0,p=1.5,use_cs=False,cs_weight=0.99999):
           ['I:dp','I:ap','I:tt'],\
           ['I:bn','I:dp','I:tt'],\
           ['I:dp','I:ap'],\
+          ['I:dp','I:tt'],\
+          ['I:ap','I:tt'],\
           ['I:bn','I:tt'],\
           ['I:bn'],\
           ['I:dp'],\
@@ -68,6 +70,10 @@ def getObsFactor(turn,ceiling=1.0,p=1.5,use_cs=False,cs_weight=0.99999):
           ['I:tt'],\
           ['yes'],\
           ['no'],\
+          ['no','I:bn'],\
+          ['no','I:dp'],\
+          ['no','I:ap'],\
+          ['no','I:tt'],\
           ['non-understanding']]
 
 #    print turn['UA']
