@@ -431,16 +431,16 @@ class LetsgoErrorModelLearner(object):
                             inco_cs[field].append(turn['CS'])
                     except:
                         if obs_ua_template[0] == 'yes':
-                            if dialog.abs_turns[t]['SA'][0] == 'C:o':
+                            if dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
                                 co_cs['yes'].append(turn['CS'])
-                            elif dialog.abs_turns[t]['SA'][0] == 'C:x':
+                            elif dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
                                 inco_cs['yes'].append(turn['CS'])
                                 print 'goal: %s'%dialog.goal
                                 print 'turn: %d(%s) of dialog: %s'%(t,turn,dialog.id)
                         elif obs_ua_template[0] == 'no':
-                            if dialog.abs_turns[t]['SA'][0] == 'C:x':
+                            if dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
                                 co_cs['no'].append(turn['CS'])
-                            elif dialog.abs_turns[t]['SA'][0] == 'C:o':
+                            elif dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
                                 inco_cs['no'].append(turn['CS'])
                 else:
                     try:
