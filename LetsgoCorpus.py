@@ -118,8 +118,6 @@ class Dialog:
                 parsing_state = 'expect_confirm_discontinued_route_value'
             elif line.find('object\t/LetsGoPublic/uncovered_route') > -1:
                 parsing_state = 'expect_confirm_uncovered_route_value'
-                print 'uncovered_route'
-                exit()
 
             elif parsing_state == 'expect_confirm_route_value' and line.find('query.route_number') == 0:
                 turn = {'SA':['C:bn:%s'%line.split('\t')[1]]}
@@ -147,7 +145,9 @@ class Dialog:
             elif parsing_state == 'expect_confirm_discontinued_route_value' and line.find('discontinued_route') == 0:
                 turn = {'SA':['C:bn:%s'%line.split('\t')[1]]}
                 parsing_state = ''
-#            elif parsing_state == 'expect_confirm_uncovered_route_value' and line.find('name') == 0:
+            elif parsing_state == 'expect_confirm_uncovered_route_value' and line.find('uncovered_route') == 0:
+                turn = {'SA':['C:bn:%s'%line.split('\t')[1]]}
+                parsing_state = ''
                 
             # user part
             elif line.find('New user input') > -1 or line.find(':last_level_touched') > -1:

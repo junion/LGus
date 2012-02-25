@@ -1,11 +1,11 @@
 def corpus_dump():
     import LetsgoCorpus as lc
-    corpus = lc.Corpus('E:/Data/tmp')
+    corpus = lc.Corpus('H:\Data\dev')
     corpus.dump()
 
 def preprocess():
     import LetsgoCorpus as lc
-    corpus = lc.Corpus('H:\Data')
+    corpus = lc.Corpus('H:/Data/training')
     corpus.preprocess()
 #    corpus2 = lc.Corpus('G:/data/LetsGoPublic2/20070616/',prep=True)
 #    for dialog in corpus2.dialogs():
@@ -14,11 +14,11 @@ def preprocess():
 def training():
     import LetsgoLearner as ll
 
-    int_learner = ll.LetsgoIntentionModelLearner('H:\Data',method='EM',prep=True)
+    int_learner = ll.LetsgoIntentionModelLearner('H:\Data',method='VB',prep=True)
     int_learner.learn()
     
-#    err_learner = ll.LetsgoErrorModelLearner('H:\Data',prep=True)
-#    err_learner.learn()
+    err_learner = ll.LetsgoErrorModelLearner('H:\Data',prep=True)
+    err_learner.learn()
 
 def batch_simulation():
     import LetsgoCorpus as lc
@@ -535,8 +535,8 @@ def extract_usr_model():
     print 'Done'
           
 if __name__ == "__main__":
-    corpus_dump()
-#    preprocess()
+#    corpus_dump()
+    preprocess()
 #    training()
 #    show_obs_sbr()
 #    goal_table()
