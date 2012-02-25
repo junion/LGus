@@ -68,6 +68,7 @@ class LetsgoIntentionModelLearner(object):
     def EM_learn(self):
         print 'Parameter learning start...'
         start_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+        logliks = []
         
         if not self.inc:
             self._reset_param()
@@ -163,18 +164,21 @@ class LetsgoIntentionModelLearner(object):
                 break
             
             prevloglik = loglik
+            logliks.append(loglik)
             loglik = 0.0
         
         print 'Parameter learning done'    
         
         end_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
         
+        print 'Log likelihood (%d): %s'%(len(logliks),', '.join(logliks))
         print 'Start time: %s'%start_time
         print 'End time: %s'%end_time
 
     def VB_learn(self):
         print 'Parameter learning start...'
         start_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+        logliks = []
         
         if not self.inc:
             self._reset_param()
@@ -269,12 +273,14 @@ class LetsgoIntentionModelLearner(object):
                 break
             
             prevloglik = loglik
+            logliks.append(loglik)
             loglik = 0.0
         
         print 'Parameter learning done'    
         
         end_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
         
+        print 'Log likelihood (%d): %s'%(len(logliks),', '.join(logliks))
         print 'Start time: %s'%start_time
         print 'End time: %s'%end_time
 
