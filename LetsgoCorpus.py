@@ -311,7 +311,7 @@ class Dialog:
 
         print 'Dialog result: ' + self.dialog_result
                         
-        if self.dialog_result == 'others':
+        if self.dialog_result not in ['fail','success']:
             file.close()
             return
 
@@ -702,7 +702,7 @@ class Corpus:
                             print filename
                             filename = os.path.join(root,filename)
                             dialog = Dialog(filename)
-                            if dialog.dialog_result == 'others':
+                            if dialog.dialog_result not in ['fail','success']:
                                 print 'Exclude: %s'%filename
                                 continue
                             else:
