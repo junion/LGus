@@ -20,11 +20,17 @@ def training():
     err_learner = ll.LetsgoErrorModelLearner('H:/Data/training-full',prep=True)
     err_learner.learn()
 
-def eval():
+def intentionL_level_eval():
     import LetsgoLearner as ll
 
     int_learner = ll.LetsgoIntentionModelLearner('H:/Data/test')
     int_learner.eval()
+
+def termination_model_training():
+    import LetsgoLearner as ll
+
+    term_learner = ll.LetsgoTerminationModelLearner('E:/Data/tmp2')
+    term_learner.learn(method='ME',windowSize=5)
     
 def batch_simulation():
     import LetsgoCorpus as lc
@@ -544,7 +550,8 @@ if __name__ == "__main__":
 #    corpus_dump()
 #    preprocess()
 #    training()
-    eval()
+#    intentionL_level_eval()
+    termination_model_training()
 #    show_obs_sbr()
 #    goal_table()
 #    extract_usr_model()
