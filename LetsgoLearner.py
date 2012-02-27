@@ -172,11 +172,7 @@ class LetsgoIntentionModelLearner(object):
         
         end_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
         
-<<<<<<< HEAD
         print 'Log likelihood (%d): %s'%(len(logliks),logliks)
-=======
-        print 'Log likelihood (%d): %s'%(len(logliks),', '.join(logliks))
->>>>>>> 3cb93d037b381227d4ff864a4c9d8cd1f2d659ca
         print 'Start time: %s'%start_time
         print 'End time: %s'%end_time
 
@@ -286,11 +282,68 @@ class LetsgoIntentionModelLearner(object):
         
         end_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
         
-<<<<<<< HEAD
         print 'Log likelihood (%d): %s'%(len(logliks),logliks)
-=======
-        print 'Log likelihood (%d): %s'%(len(logliks),', '.join(logliks))
->>>>>>> 3cb93d037b381227d4ff864a4c9d8cd1f2d659ca
+        print 'Start time: %s'%start_time
+        print 'End time: %s'%end_time
+
+    def eval(self):
+        start_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+        
+        Variables.clear_default_domain()
+        Variables.set_default_domain({'H_bn_t':lv.H_bn,'H_dp_t':lv.H_dp,'H_ap_t':lv.H_ap,\
+                                      'H_tt_t':lv.H_tt,'UA_tt':lv.UA,'H_bn_tt':lv.H_bn,\
+                                      'H_dp_tt':lv.H_dp,'H_ap_tt':lv.H_ap,'H_tt_tt':lv.H_tt,\
+                                      'H_bn_0':lv.H_bn,'H_dp_0':lv.H_dp,'H_ap_0':lv.H_ap,\
+                                      'H_tt_0':lv.H_tt})
+
+        fHt_UAtt_Htt = ls.load_model('_factor_Ht_UAtt_Htt.model')
+        
+        loglik = 0.0
+        for d, dialog in enumerate(lc.Corpus(self.data,prep=self.prep).dialogs()):
+            if len(dialog.turns) > 40:
+                continue
+            
+            print 'processing dialog #%d...'%d
+        
+            Variables.change_variable('H_bn_0',lv.H_bn)
+            Variables.change_variable('H_dp_0',lv.H_dp)
+            Variables.change_variable('H_ap_0',lv.H_ap)
+            Variables.change_variable('H_tt_0',lv.H_tt)
+        
+            dialog_factors = []
+            for t, turn in enumerate(dialog.abs_turns):
+                tmp_fHt_UAtt_Htt = Factor(('H_bn_%s'%t,'H_dp_%s'%t,'H_ap_%s'%t,'H_tt_%s'%t,\
+                                           'UA_%s'%(t+1),'H_bn_%s'%(t+1),'H_dp_%s'%(t+1),\
+                                           'H_ap_%s'%(t+1),'H_tt_%s'%(t+1)),
+                        new_domain_variables={'UA_%s'%(t+1):lv.UA,'H_bn_%s'%(t+1):lv.H_bn,\
+                                              'H_dp_%s'%(t+1):lv.H_dp,'H_ap_%s'%(t+1):lv.H_ap,\
+                                              'H_tt_%s'%(t+1):lv.H_tt})
+                tmp_fHt_UAtt_Htt[:] = fHt_UAtt_Htt[:]
+        #            tmp_fHt_UAtt_Htt = fHt_UAtt_Htt.copy_rename({'H_bn_t':'H_bn_%s'%i,'H_dp_t':'H_dp_%s'%i,'H_ap_t':'H_ap_%s'%i,'H_tt_t':'H_tt_%s'%i,'UA_tt':'UA_%s'%(i+1),'H_bn_tt':'H_bn_%s'%(i+1),'H_dp_tt':'H_dp_%s'%(i+1),'H_ap_tt':'H_ap_%s'%(i+1),'H_tt_tt':'H_tt_%s'%(i+1)})            
+                tmp_fGbn_Ht_SAtt_UAtt = Factor(('H_bn_%s'%t,'H_dp_%s'%t,'H_ap_%s'%t,'H_tt_%s'%t,'UA_%s'%(t+1)))
+        #            tmp_fGbn_Ht_SAtt_UAtt = Factor(('H_bn_%s'%i,'H_dp_%s'%i,'H_ap_%s'%i,'H_tt_%s'%i,'UA_%s'%(i+1)),new_domain_variables={'UA_%s'%(i+1):UA,'H_bn_%s'%i:H_bn,'H_dp_%s'%i:H_dp,'H_ap_%s'%i:H_ap,'H_tt_%s'%i:H_tt})
+                try:
+                    tmp_fGbn_Ht_SAtt_UAtt[:] = \
+                    ls.load_model(('_factor_%s_%s.model'%(dialog.abs_goal['G_bn'],turn['SA'][0])).replace(':','-'))[:]
+                except:
+                    print ('Error:cannot find _factor_%s_%s.model'%(dialog.abs_goal['G_bn'],turn['SA'][0])).replace(':','-')
+                    exit()
+                tmp_fUAtt_Ott = Factor(('UA_%s'%(t+1),))
+                tmp_fUAtt_Ott[:] = lo.getObsFactor(turn,use_cs=True)[:]
+                factor = tmp_fHt_UAtt_Htt * tmp_fGbn_Ht_SAtt_UAtt * tmp_fUAtt_Ott
+                dialog_factors.append(factor.copy(copy_domain=True))
+            
+            jfr = JFR(SFR(dialog_factors))
+            jfr.condition({'H_bn_0':'x','H_dp_0':'x','H_ap_0':'x','H_tt_0':'x'})
+            jfr.calibrate()
+                
+            rf = jfr.factors_containing_variable('UA_1')
+            loglik += math.log(rf[0].copy().z())
+                
+        print 'loglik: %e'%loglik
+        
+        end_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+        
         print 'Start time: %s'%start_time
         print 'End time: %s'%end_time
 

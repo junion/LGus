@@ -20,6 +20,12 @@ def training():
     err_learner = ll.LetsgoErrorModelLearner('H:/Data/training-full',prep=True)
     err_learner.learn()
 
+def eval():
+    import LetsgoLearner as ll
+
+    int_learner = ll.LetsgoIntentionModelLearner('H:/Data/test')
+    int_learner.eval()
+    
 def batch_simulation():
     import LetsgoCorpus as lc
     import LetsgoSimulator as ls
@@ -537,7 +543,8 @@ def extract_usr_model():
 if __name__ == "__main__":
 #    corpus_dump()
 #    preprocess()
-    training()
+#    training()
+    eval()
 #    show_obs_sbr()
 #    goal_table()
 #    extract_usr_model()
