@@ -68,6 +68,7 @@ class LetsgoIntentionModelLearner(object):
     def EM_learn(self):
         print 'Parameter learning start...'
         start_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+        logliks = []
         
         if not self.inc:
             self._reset_param()
@@ -155,6 +156,7 @@ class LetsgoIntentionModelLearner(object):
                 ls.store_model(CPT(ess[factor],child='UA_tt',cpt_force=True),factor)
             
             relgain = ((loglik - prevloglik)/math.fabs(prevloglik))
+            logliks.append(loglik)
             print 'prevloglik: %e'%prevloglik
             print 'loglik: %e'%loglik
             print 'relgain: %e'%relgain
@@ -169,12 +171,14 @@ class LetsgoIntentionModelLearner(object):
         
         end_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
         
+        print 'Log likelihood (%d): %s'%(len(logliks),logliks)
         print 'Start time: %s'%start_time
         print 'End time: %s'%end_time
 
     def VB_learn(self):
         print 'Parameter learning start...'
         start_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+        logliks = []
         
         if not self.inc:
             self._reset_param()
@@ -261,6 +265,7 @@ class LetsgoIntentionModelLearner(object):
                 ls.store_model(CPT(ess[factor],child='UA_tt',cpt_force=True),factor)
             
             relgain = ((loglik - prevloglik)/math.fabs(prevloglik))
+            logliks.append(loglik)
             print 'prevloglik: %e'%prevloglik
             print 'loglik: %e'%loglik
             print 'relgain: %e'%relgain
@@ -275,6 +280,7 @@ class LetsgoIntentionModelLearner(object):
         
         end_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
         
+        print 'Log likelihood (%d): %s'%(len(logliks),logliks)
         print 'Start time: %s'%start_time
         print 'End time: %s'%end_time
 

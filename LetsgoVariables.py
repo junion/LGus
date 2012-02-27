@@ -24,10 +24,10 @@ UA = ('I:ap,I:bn,I:dp,I:tt',\
       'I:tt',\
       'yes',\
       'no',\
-      'no,I:bn',\
-      'no,I:dp',\
-      'no,I:ap',\
-      'no,I:tt',\
+      'I:bn,no',\
+      'I:dp,no',\
+      'I:ap,no',\
+      'I:tt,no',\
       'non-understanding'\
       )
 
