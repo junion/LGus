@@ -315,6 +315,10 @@ class Dialog:
             file.close()
             return
 
+        if self.dialog_result == 'fail':
+            turn['UA'] = ['hangup']
+            self.turns.append(copy.deepcopy(turn))
+
 #        '''
 #        Abstraction
 #        '''

@@ -28,7 +28,8 @@ UA = ('I:ap,I:bn,I:dp,I:tt',\
       'I:dp,no',\
       'I:ap,no',\
       'I:tt,no',\
-      'non-understanding'\
+      'non-understanding',\
+      'hangup'\
       )
 
 SA = ('R:open',\
