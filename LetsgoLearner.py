@@ -594,10 +594,32 @@ class LetsgoTerminationModelLearner(object):
 #        print 'Parameter learning start...'
         start_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
 
+        num_success = 0
+        total_length_success = 0
+        success_length_dict = {}
+        num_fail = 0
+        total_length_fail = 0
+        fail_length_dict = {}
+        
         training_file = open('tm_model\\termination_training','w')
         for d, dialog in enumerate(lc.Corpus(self.data,prep=self.prep).dialogs()):
             if len(dialog.turns) > 40:
                 continue
+            
+            if dialog.dialog_result == 'fail':
+                num_fail += 1
+                total_length_fail += len(dialog.turns)
+                try:
+                    fail_length_dict[len(dialog.turns)] += 1
+                except:
+                    fail_length_dict[len(dialog.turns)] = 1
+            else:
+                num_success += 1
+                total_length_success += len(dialog.turns)
+                try:
+                    success_length_dict[len(dialog.turns)] += 1
+                except:
+                    success_length_dict[len(dialog.turns)] = 1
 
             
 #            NIC = 0
@@ -706,18 +728,25 @@ class LetsgoTerminationModelLearner(object):
                 features.append('COPW:%f'%(1.0*len(filter(lambda x:x == 'o',cooperativePairs[-effectiveWindowSize:]))/effectiveWindowSize))
                 
                 
-                featureString = ' '.join(features) + '\t' + ('1' if t + 1 == len(dialog.turns) else '0') + '\n'
+#                featureString = ' '.join(features) + '\t' + ('1' if t + 1 == len(dialog.turns) and dialog.dialog_result == 'fail' else '0') + '\n'
+                for idx,feature in enumerate(features):
+                    features[idx] = '%d:%s'%((idx+1),feature.split(':')[1])
+                featureString = ('+1' if t + 1 == len(dialog.turns) and dialog.dialog_result == 'fail' else '-1') + ' ' + ' '.join(features)
     
 #                print featureString
                 training_file.write(featureString+'\n')
 
         training_file.close()
         
+        print 'Number of successes: %d, avg length: %f'%(num_success,1.0*total_length_success/num_success)
+        print success_length_dict
+        print 'Number of fails: %d, avg length: %f'%(num_fail,1.0*total_length_fail/num_fail)
+        print fail_length_dict
 #        cmdline = './svm-predict test_feature ged.model output'
-        cmdline = 'bin\\crf_learn.exe tm_model\\termination_template tm_model\\termination_training tm_model\\termination_model > tm_model\\training_log'
-        Popen(cmdline,shell=True,stdout=PIPE).stdout
-        cmdline = 'bin\\crf_test.exe -p 1 tm_model\\termination_model tm_model\\termination_training tm_model\\termination_result > tm_model\\test_log'
-        Popen(cmdline,shell=True,stdout=PIPE).stdout
+#        cmdline = 'bin\\crf_learn.exe tm_model\\termination_template tm_model\\termination_training tm_model\\termination_model > tm_model\\training_log'
+#        Popen(cmdline,shell=True,stdout=PIPE).stdout
+#        cmdline = 'bin\\crf_test.exe -p 1 tm_model\\termination_model tm_model\\termination_training tm_model\\termination_result > tm_model\\test_log'
+#        Popen(cmdline,shell=True,stdout=PIPE).stdout
         
         end_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
         
