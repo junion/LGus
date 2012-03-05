@@ -10,6 +10,10 @@ import LetsgoVariables as lv
 import LetsgoObservation as lo
 import LetsgoSerializer as ls
 
+from GlobalConfig import GetConfig
+
+config = GetConfig()
+
 class LetsgoSimulationEvaluator(object):
     
     def __init__(self,data=None,prep=False,model='model/_Corpus.model'):
@@ -461,27 +465,35 @@ class LetsgoSimulationEvaluator(object):
                         obs_ua_template.append(act)
          
                 if len(obs_ua_template) == 1:
-#                    try:
                     if len(obs_ua_template[0].split(':')) == 3:
                         dummy,field,val = obs_ua_template[0].split(':')
                         if val == 'o':
                             co_cs[field].append(turn['CS'])
                         else:
                             inco_cs[field].append(turn['CS'])
-#                    except:
                     else:
                         if obs_ua_template[0] == 'yes':
-                            if dialog.abs_turns[t]['SA'][0] == 'C:o':
-                                co_cs['yes'].append(turn['CS'])
-                            elif dialog.abs_turns[t]['SA'][0] == 'C:x':
-                                inco_cs['yes'].append(turn['CS'])
-#                                print 'goal: %s'%dialog.goal
-#                                print 'turn: %d(%s) of dialog: %s'%(t,turn,dialog.id)
+                            if config.getboolean('UserSimulation','extendedSystemActionSet'):
+                                if dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
+                                    co_cs['yes'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
+                                    inco_cs['yes'].append(turn['CS'])
+                            else:
+                                if dialog.abs_turns[t]['SA'][0] == 'C:o':
+                                    co_cs['yes'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] == 'C:x':
+                                    inco_cs['yes'].append(turn['CS'])
                         elif obs_ua_template[0] == 'no':
-                            if dialog.abs_turns[t]['SA'][0] == 'C:x':
-                                co_cs['no'].append(turn['CS'])
-                            elif dialog.abs_turns[t]['SA'][0] == 'C:o':
-                                inco_cs['no'].append(turn['CS'])
+                            if config.getboolean('UserSimulation','extendedSystemActionSet'):
+                                if dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
+                                    co_cs['no'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
+                                    inco_cs['no'].append(turn['CS'])
+                            else:
+                                if dialog.abs_turns[t]['SA'][0] == 'C:x':
+                                    co_cs['no'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] == 'C:o':
+                                    inco_cs['no'].append(turn['CS'])
                 else:
                     try:
 #                        if make_correction_model and len(obs_ua_template) == 2 and 'no' in obs_ua_template:
@@ -564,15 +576,27 @@ class LetsgoSimulationEvaluator(object):
                         else: 
                             self.inferActCounts['tt']['incorrect'] += 1
                     elif act == 'yes':
-                        if dialog.abs_turns[t]['SA'][0] == 'C:o':
-                            self.inferActCounts['yes']['correct'] += 1
-                        elif dialog.abs_turns[t]['SA'][0] == 'C:x':
-                            self.inferActCounts['yes']['incorrect'] += 1
+                        if config.getboolean('UserSimulation','extendedSystemActionSet'):
+                            if dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
+                                self.inferActCounts['yes']['correct'] += 1
+                            elif dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
+                                self.inferActCounts['yes']['incorrect'] += 1
+                        else:
+                            if dialog.abs_turns[t]['SA'][0] == 'C:o':
+                                self.inferActCounts['yes']['correct'] += 1
+                            elif dialog.abs_turns[t]['SA'][0] == 'C:x':
+                                self.inferActCounts['yes']['incorrect'] += 1
                     elif act == 'no':
-                        if dialog.abs_turns[t]['SA'][0] == 'C:x':
-                            self.inferActCounts['no']['correct'] += 1
-                        elif dialog.abs_turns[t]['SA'][0] == 'C:o':
-                            self.inferActCounts['no']['incorrect'] += 1
+                        if config.getboolean('UserSimulation','extendedSystemActionSet'):
+                            if dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
+                                self.inferActCounts['no']['correct'] += 1
+                            elif dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
+                                self.inferActCounts['no']['incorrect'] += 1
+                        else:
+                            if dialog.abs_turns[t]['SA'][0] == 'C:x':
+                                self.inferActCounts['no']['correct'] += 1
+                            elif dialog.abs_turns[t]['SA'][0] == 'C:o':
+                                self.inferActCounts['no']['incorrect'] += 1
                     elif act == 'non-understanding':
                         self.inferActCounts['non-understanding'] += 1
                     else:
@@ -890,27 +914,35 @@ class LetsgoSimulationEvaluator(object):
                         obs_ua_template.append(act)
          
                 if len(obs_ua_template) == 1:
-#                    try:
                     if len(obs_ua_template[0].split(':')) == 3:
                         dummy,field,val = obs_ua_template[0].split(':')
                         if val == 'o':
                             co_cs[field].append(turn['CS'])
                         else:
                             inco_cs[field].append(turn['CS'])
-#                    except:
                     else:
                         if obs_ua_template[0] == 'yes':
-                            if dialog.abs_turns[t]['SA'][0] == 'C:o':
-                                co_cs['yes'].append(turn['CS'])
-                            elif dialog.abs_turns[t]['SA'][0] == 'C:x':
-                                inco_cs['yes'].append(turn['CS'])
-#                                print 'goal: %s'%dialog.goal
-#                                print 'turn: %d(%s) of dialog: %s'%(t,turn,dialog.id)
+                            if config.getboolean('UserSimulation','extendedSystemActionSet'):
+                                if dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
+                                    co_cs['yes'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
+                                    inco_cs['yes'].append(turn['CS'])
+                            else:
+                                if dialog.abs_turns[t]['SA'][0] == 'C:o':
+                                    co_cs['yes'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] == 'C:x':
+                                    inco_cs['yes'].append(turn['CS'])
                         elif obs_ua_template[0] == 'no':
-                            if dialog.abs_turns[t]['SA'][0] == 'C:x':
-                                co_cs['no'].append(turn['CS'])
-                            elif dialog.abs_turns[t]['SA'][0] == 'C:o':
-                                inco_cs['no'].append(turn['CS'])
+                            if config.getboolean('UserSimulation','extendedSystemActionSet'):
+                                if dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
+                                    co_cs['no'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
+                                    inco_cs['no'].append(turn['CS'])
+                            else:
+                                if dialog.abs_turns[t]['SA'][0] == 'C:x':
+                                    co_cs['no'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] == 'C:o':
+                                    inco_cs['no'].append(turn['CS'])
                 else:
                     try:
 #                        if make_correction_model and len(obs_ua_template) == 2 and 'no' in obs_ua_template:
@@ -983,15 +1015,27 @@ class LetsgoSimulationEvaluator(object):
                         else: 
                             self.refActCounts['tt']['incorrect'] += 1
                     elif act == 'yes':
-                        if dialog.abs_turns[t]['SA'][0] == 'C:o':
-                            self.refActCounts['yes']['correct'] += 1
-                        elif dialog.abs_turns[t]['SA'][0] == 'C:x':
-                            self.refActCounts['yes']['incorrect'] += 1
+                        if config.getboolean('UserSimulation','extendedSystemActionSet'):
+                            if dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
+                                self.refActCounts['yes']['correct'] += 1
+                            elif dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
+                                self.refActCounts['yes']['incorrect'] += 1
+                        else:
+                            if dialog.abs_turns[t]['SA'][0] == 'C:o':
+                                self.refActCounts['yes']['correct'] += 1
+                            elif dialog.abs_turns[t]['SA'][0] == 'C:x':
+                                self.refActCounts['yes']['incorrect'] += 1
                     elif act == 'no':
-                        if dialog.abs_turns[t]['SA'][0] == 'C:x':
-                            self.refActCounts['no']['correct'] += 1
-                        elif dialog.abs_turns[t]['SA'][0] == 'C:o':
-                            self.refActCounts['no']['incorrect'] += 1
+                        if config.getboolean('UserSimulation','extendedSystemActionSet'):
+                            if dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
+                                self.refActCounts['no']['correct'] += 1
+                            elif dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
+                                self.refActCounts['no']['incorrect'] += 1
+                        else:
+                            if dialog.abs_turns[t]['SA'][0] == 'C:x':
+                                self.refActCounts['no']['correct'] += 1
+                            elif dialog.abs_turns[t]['SA'][0] == 'C:o':
+                                self.refActCounts['no']['incorrect'] += 1
                     elif act == 'non-understanding':
                         self.refActCounts['non-understanding'] += 1
                     else:
