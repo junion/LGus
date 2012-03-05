@@ -1,8 +1,5 @@
 
 import os,copy
-from GlobalConfig import GetConfig
-
-config = GetConfig()
 
 def uniqify(seq, idfun=None):  
     # order preserving 
@@ -268,8 +265,8 @@ class Dialog:
             self.abs_goal['G_bn'] = 'o'
         file.close()
 
-    def __mix_init__(self,filename,max_turn_num=40):
-#    def __init__(self,filename,max_turn_num=40):
+#    def __mix_init__(self,filename,max_turn_num=40):
+    def __init__(self,filename,max_turn_num=40):
         self.id = filename
         self.goal = {'G_bn':'','G_dp':'','G_ap':'','G_tt':''}
         self.turns = []
@@ -386,9 +383,9 @@ class Dialog:
 #                print turn
             elif line.find('[h4_confidence]') > -1 or line.find('[confidence]') > -1:
                 turn['CS'] = float(line.split('=')[1])
-#            elif not look_for_ua == 'wait' and line.find('Last turn: non-understanding') > -1:                
-#                turn['UA'] = ['non-understanding']
-#                look_for_ua = 'wait'
+            elif not look_for_ua == 'wait' and line.find('Last turn: non-understanding') > -1:                
+                turn['UA'] = ['non-understanding']
+                look_for_ua = 'wait'
 #                print line
             elif not look_for_ua == 'wait' and line.find('name') == 0 and line.find('|') < 0:
 #                print line
@@ -446,6 +443,7 @@ class Dialog:
                 if turn['UA'] == []:
                     turn['UA'] = ['non-understanding']
 #                print turn['UA']
+                print turn
                 self.turns.append(copy.deepcopy(turn)); del turn
                 look_for_ua = 'wait'
 #            '''
@@ -547,8 +545,8 @@ class Dialog:
             self.abs_goal['G_bn'] = 'o'
         file.close()
 
-#    def __new_init__(self,filename,max_turn_num=40):
-    def __init__(self,filename,max_turn_num=40):
+    def __new_init__(self,filename,max_turn_num=40):
+#    def __init__(self,filename,max_turn_num=40):
         self.id = filename
         self.goal = {'G_bn':'','G_dp':'','G_ap':'','G_tt':''}
         self.turns = []
@@ -790,10 +788,10 @@ class Dialog:
     #                print line
                     if turn['UA'] == []:
                         turn['UA'] = ['non-understanding']
-                        turn['CS'] = 0
+                        turn['CS'] = 1.0
                     turn['UA'] = uniqify(turn['UA'])
                     self.turns.append(copy.deepcopy(turn))
-#                    print turn
+                    print turn
                     del turn
                     parsing_state = ''
             # backend query
@@ -849,18 +847,18 @@ class Dialog:
 
         print 'Dialog result: ' + self.dialog_result
                         
-        if self.dialog_result not in ['fail','success','no ride']:
-#        if self.dialog_result not in ['success','no ride']:
+#        if self.dialog_result not in ['fail','success','no ride']:
+        if self.dialog_result not in ['success','no ride']:
             file.close()
             return
 
-#        if self.dialog_result == 'fail':
-#            try:
-#                turn['UA'] = ['hangup']
-#            except:
-#                turn = {'SA':['O:-'],'UA':['hangup']}
-#            turn['CS'] = 1.0
-#            self.turns.append(copy.deepcopy(turn))
+        if self.dialog_result == 'fail':
+            try:
+                turn['UA'] = ['hangup']
+            except:
+                turn = {'SA':['O:-'],'UA':['hangup']}
+            turn['CS'] = 1.0
+            self.turns.append(copy.deepcopy(turn))
 
 #        '''
 #        Abstraction
@@ -877,16 +875,18 @@ class Dialog:
         for t, turn in enumerate(self.abs_turns):
             if turn['SA'][0].find('C:') == 0: 
                 act,field,value = turn['SA'][0].split(':')
-                if config.getboolean('UserSimulation','extendedSystemActionSet'):
-                    if self.goal['G_'+field].find(value) > -1:
-                        turn['SA'][0] = 'C:%s:o'%field
-                    else:
-                        turn['SA'][0] = 'C:%s:x'%field
+#                print self.goal[field] + ' vs. ' + value
+                if self.goal['G_'+field].find(value) > -1:
+#                    turn['SA'][0] = 'C:%s:o'%field
+                    turn['SA'][0] = 'C:o'
+#                    print 'Correct'
+#                elif self.goal['G_'+field] not in neighbors_monuments and value in neighbors_monuments:
+#                    turn['SA'][0] = 'C:-'
+#                    print 'Dont know'
                 else:
-                    if self.goal['G_'+field].find(value) > -1:
-                        turn['SA'][0] = 'C:o'
-                    else:
-                        turn['SA'][0] = 'C:x'
+#                    turn['SA'][0] = 'C:%s:x'%field
+                    turn['SA'][0] = 'C:x'
+#                    print 'Incorrect'
 
             acts = []
             for act in turn['UA']:
@@ -942,10 +942,9 @@ class Corpus:
                             print filename
                             filename = os.path.join(root,filename)
                             dialog = Dialog(filename)
-#                            if dialog.dialog_failure:
-                            if dialog.dialog_result not in ['fail','success','no ride']:
+                            if dialog.dialog_failure:
 #                            if dialog.dialog_result not in ['success','no ride']:
-#                                print 'dialog fail: %s'%filename
+                                print 'dialog fail: %s'%filename
                                 continue
                             else:
                                 yield dialog
@@ -953,13 +952,10 @@ class Corpus:
     def goal_table(self):
         goal_table = {}
         for dialog in self.dialogs():
-            if dialog.goal['G_dp'] != '' and\
-            dialog.goal['G_ap'] != '' and\
-            dialog.goal['G_tt'] != '': 
-                try:
-                    goal_table[str(dialog.goal)] += 1
-                except:
-                    goal_table[str(dialog.goal)] = 1
+            try:
+                goal_table[str(dialog.goal)] += 1
+            except:
+                goal_table[str(dialog.goal)] = 1
         return goal_table
 
     def val_list(self):

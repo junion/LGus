@@ -1,42 +1,38 @@
-def corpus_dump():
-    import LetsgoCorpus as lc
-    corpus = lc.Corpus('H:\Data\dev')
-    corpus.dump()
+from GlobalConfig import InitConfig,GetConfig
+
+InitConfig()
+config = GetConfig()
+config.read(['LGus.conf'])
 
 def preprocess():
     import LetsgoCorpus as lc
-    corpus = lc.Corpus('H:/Data/training-full')
+    corpus = lc.Corpus('D:/Data/training')
     corpus.preprocess()
+    
+#    import tmpCorpus as tc
+#    corpus = tc.Corpus('D:/Data/training')
+#    corpus.preprocess()
 #    corpus2 = lc.Corpus('G:/data/LetsGoPublic2/20070616/',prep=True)
 #    for dialog in corpus2.dialogs():
 #        print dialog.goal,dialog.turns
     
-def training():
+def intention_model_training():
     import LetsgoLearner as ll
 
-    int_learner = ll.LetsgoIntentionModelLearner('H:/Data/training-full',method='VB',tol=0.001,prep=True)
+    int_learner = ll.LetsgoIntentionModelLearner('D:/Data/training',method='EM',prep=True)
     int_learner.learn()
     
-    err_learner = ll.LetsgoErrorModelLearner('H:/Data/training-full',prep=True)
+def error_model_training():
+    import LetsgoLearner as ll
+
+    err_learner = ll.LetsgoErrorModelLearner('D:/Data/training',prep=True)
     err_learner.learn()
 
-def intentionL_level_eval():
-    import LetsgoLearner as ll
-
-    int_learner = ll.LetsgoIntentionModelLearner('H:/Data/test')
-    int_learner.eval()
-
-def termination_model_training():
-    import LetsgoLearner as ll
-
-    term_learner = ll.LetsgoTerminationModelLearner('E:/Data/tmp2')
-    term_learner.learn(method='ME',windowSize=5)
-    
 def batch_simulation():
     import LetsgoCorpus as lc
     import LetsgoSimulator as ls
 
-    corpus = lc.Corpus('H:\Data',prep=True)
+    corpus = lc.Corpus('D:/Data/training',prep=True)
     simulator = ls.IntentionSimulator()
     
     for dialog in corpus.dialogs():
@@ -49,7 +45,7 @@ def batch_simulation():
 def goal_table():
     import LetsgoSimulator as ls
     
-    gg = ls.GoalGenerator(data='H:\Data',init=True,prep=True)
+    gg = ls.GoalGenerator(data='D:/Data/training',init=True,prep=True)
 #    gg.show_goal_table()
     print gg.goal()
  
@@ -72,24 +68,26 @@ def show_dialog_len():
     import LetsgoCorpus as lc
     import operator
 
-    corpus = lc.Corpus('E:/Data/Recent',prep=True)
+    corpus = lc.Corpus('D:/Data/training',prep=True)
     
     l = [];avg_cs = []
     for dialog in corpus.dialogs():
-        if len(dialog.turns) > 45:
+        if len(dialog.turns) > 40:
             continue
         l.append(len(dialog.turns))
         avg_cs.append(reduce(operator.add,map(lambda x:x['CS'],dialog.turns))/l[-1])
     (ar,br) = polyfit(l,avg_cs,1)
     csr = polyval([ar,br],l)
     plt.plot(l,avg_cs,'g.',alpha=0.75)
-    plt.plot(l,csr,'r.-',alpha=0.75)
+    plt.plot(l,csr,'r-',alpha=0.75,linewidth=2)
     plt.axis([0,50,0,1.0])
     plt.xlabel('Dialog length (turn)')
     plt.ylabel('Confidence score')
     plt.title('Dialog length vs. Confidence score')
     plt.grid(True)
-    plt.show()
+    plt.savefig('img/'+'Dialog length vs Confidence score'+'.png')
+#    plt.show()
+    plt.clf()
 
 def show_obs_sbr():
     import numpy as np
@@ -98,11 +96,6 @@ def show_obs_sbr():
     import statistics 
     import LetsgoSerializer as ls
     from SparseBayes import SparseBayes
-    from GlobalConfig import InitConfig,GetConfig
-
-    InitConfig()
-    config = GetConfig()
-    config.read(['LGus.conf'])
 
 
     dimension = 1
@@ -248,7 +241,6 @@ def make_obs_sbr_with_correction():
     import statistics 
     import LetsgoSerializer as ls
     from SparseBayes import SparseBayes
-    from GlobalConfig import InitConfig,GetConfig
     import LetsgoLearner as ll
 
 #    err_learner = ll.LetsgoErrorModelLearner('E:/Data/Recent',prep=True)
@@ -545,19 +537,73 @@ def extract_usr_model():
     ls.store_model(um,'_user_action.model')
     
     print 'Done'
-          
+
+def corpus_stats():
+    import LetsgoSimEval as lse
+
+    evaluator = lse.LetsgoSimulationEvaluator('D:/Data/training',prep=True)
+    evaluator.reference_stat()
+    evaluator.show_conf_score(infer=False)
+
+def sim_eval():
+    import LetsgoSimEval as lse
+
+    evaluator = lse.LetsgoSimulationEvaluator('D:/Data/training',prep=True)
+#    evaluator.simulation()
+#    evaluator.simulated_stat()
+#    evaluator.show_conf_score()
+    evaluator.evaluate_fscore()
+    evaluator.evaluate_fscore(False)
+        
+def termination_model_training():
+    import LetsgoTerminationModel as lt
+    
+    learner = lt.LetsgoTerminationModelLearner('D:/Data/training',prep=True)
+    learner.learn()
+
+def test_preprocess():
+    import LetsgoCorpus as lc
+    corpus = lc.Corpus('D:/Data/test',model='model/_Test_Corpus.model')
+    corpus.preprocess()
+
+def test_corpus_stats():
+    import LetsgoSimEval as lse
+
+    evaluator = lse.LetsgoSimulationEvaluator('D:/Data/test',prep=True,model='model/_Test_Corpus.model')
+    evaluator.reference_stat()
+    evaluator.show_conf_score(infer=False)
+
+def test_sim_eval():
+    import LetsgoSimEval as lse
+
+    evaluator = lse.LetsgoSimulationEvaluator('D:/Data/test',prep=True,model='model/_Test_Corpus.model')
+    evaluator.simulation()
+    evaluator.simulated_stat()
+    evaluator.show_conf_score()
+    evaluator.evaluate_fscore()
+    evaluator.evaluate_fscore(False)
+    
+    
 if __name__ == "__main__":
-#    corpus_dump()
 #    preprocess()
-#    training()
-#    intentionL_level_eval()
-    termination_model_training()
-#    show_obs_sbr()
+#    corpus_stats()
 #    goal_table()
+#    intention_model_training()
+#    error_model_training()
+#    sim_eval()
+#    termination_model_training()
+
+#    test_preprocess()
+#    test_corpus_stats()
+    test_sim_eval()
+
+
+
+
+#    show_obs_sbr()
 #    extract_usr_model()
 #    make_obs_sbr_with_correction()
+#    show_dialog_len()
 #    batch_simulation()
-
 #    interactive_simulation()
 #    show_cs()
-#    show_dialog_len()

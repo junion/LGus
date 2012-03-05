@@ -5,6 +5,12 @@ import cherrypy
 from cherrypy.lib.cptools import accept
 import cherrypy.lib.auth_basic
 import cherrypy.lib.sessions
+
+from GlobalConfig import InitConfig,GetConfig
+InitConfig()
+config = GetConfig()
+config.read(['LGus.conf'])
+
 import LetsgoSimulator as ls
 
 def load_user(login): 
@@ -242,6 +248,8 @@ class UsrSim(object):
                             web_ua.append('Deny')
                         elif usr_act == 'non-understanding':
                             web_ua.append('Non-understanding')
+                        elif usr_act == 'hangup':
+                            web_ua.append('Hang up')
                 return {'User action':web_ua,'Confidence score':cs}
         except Exception:
             print traceback.format_exc()

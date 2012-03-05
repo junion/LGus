@@ -2,6 +2,9 @@ import numpy as np
 from Parameters import Factor
 import LetsgoSerializer as ls
 from SparseBayes import SparseBayes
+from GlobalConfig import GetConfig
+
+config = GetConfig()
 
 sbr_models = {'I:bn':ls.load_model('_calibrated_confidence_score_sbr_bn.model'),\
                   'I:dp':ls.load_model('_calibrated_confidence_score_sbr_dp.model'),\
@@ -51,34 +54,61 @@ def Calibrate(sbr_models,ua,cs):
     return cs
 
 #def getObsFactor(turn,ceiling=1.0,p=1.5,use_cs=False,cs_weight=0.8):
-def getObsFactor(turn,ceiling=1.0,p=1.5,use_cs=False,cs_weight=0.99999):
+def getObsFactor(turn,ceiling=1.0,p=1.0,use_cs=False,cs_weight=0.99999,domain=None):
     
 #    if turn['UA'] == ['non-understanding']:
 #        eps += 0.1
-    fUAtt_Ott = Factor(('UA_tt',))
-    ua_types = [['I:bn','I:dp','I:ap','I:tt'],\
-          ['I:bn','I:dp','I:ap'],\
-          ['I:dp','I:ap','I:tt'],\
-          ['I:bn','I:dp','I:tt'],\
-          ['I:dp','I:ap'],\
-          ['I:dp','I:tt'],\
-          ['I:ap','I:tt'],\
-          ['I:bn','I:tt'],\
-          ['I:bn'],\
-          ['I:dp'],\
-          ['I:ap'],\
-          ['I:tt'],\
-          ['yes'],\
-          ['no'],\
-          ['no','I:bn'],\
-          ['no','I:dp'],\
-          ['no','I:ap'],\
-          ['no','I:tt'],\
-          ['non-understanding']]
+    if domain:
+        fUAtt_Ott = Factor(('UA_tt',),domain=domain)
+    else:
+        fUAtt_Ott = Factor(('UA_tt',))
+
+    if config.getboolean('UserSimulation','extendedUserActionSet'):        
+        ua_types = [['I:bn','I:dp','I:ap','I:tt'],\
+              ['I:bn','I:dp','I:ap'],\
+              ['I:dp','I:ap','I:tt'],\
+              ['I:bn','I:dp','I:tt'],\
+              ['I:dp','I:ap'],\
+              ['I:dp','I:tt'],\
+              ['I:ap','I:tt'],\
+              ['I:bn','I:tt'],\
+              ['I:bn'],\
+              ['I:dp'],\
+              ['I:ap'],\
+              ['I:tt'],\
+              ['yes'],\
+              ['no'],\
+              ['no','I:bn'],\
+              ['no','I:dp'],\
+              ['no','I:ap'],\
+              ['no','I:tt'],\
+              ['non-understanding']]
+    else:
+        ua_types = [['I:bn','I:dp','I:ap','I:tt'],\
+              ['I:bn','I:dp','I:ap'],\
+              ['I:dp','I:ap','I:tt'],\
+              ['I:bn','I:dp','I:tt'],\
+              ['I:dp','I:ap'],\
+              ['I:bn','I:tt'],\
+              ['I:bn'],\
+              ['I:dp'],\
+              ['I:ap'],\
+              ['I:tt'],\
+              ['yes'],\
+              ['no'],\
+              ['non-understanding']]
 
 #    print turn['UA']
 #    print turn['CS']
 
+    if turn['UA'] == ['non-understanding']:
+        for ua in ua_types:
+            if ua == ['non-understanding']:
+                fUAtt_Ott[{'UA_tt':','.join(sorted(ua))}] = 1.0
+            else:
+                fUAtt_Ott[{'UA_tt':','.join(sorted(ua))}] = 0
+        return fUAtt_Ott
+    
     if use_cs: 
         cs = turn['CS']
 #        print turn['UA']
@@ -90,12 +120,15 @@ def getObsFactor(turn,ceiling=1.0,p=1.5,use_cs=False,cs_weight=0.99999):
     cs = cs*cs_weight
     eps = (1.0 - cs)/len(ua_types)
     for ua in ua_types:
-        fUAtt_Ott[{'UA_tt':','.join(sorted(ua))}] = \
-        min(\
-            cs*(float(len(set(ua).intersection(set(turn['UA']))))/len(set(ua).union(set(turn['UA']))))**p,\
-            ceiling)\
-             + eps
-
+        if ua != ['non-understanding']:
+            fUAtt_Ott[{'UA_tt':','.join(sorted(ua))}] = \
+            min(\
+                cs*(float(len(set(ua).intersection(set(turn['UA']))))/len(set(ua).union(set(turn['UA']))))**p,\
+                ceiling)\
+                 + eps
+        else:
+            fUAtt_Ott[{'UA_tt':','.join(sorted(ua))}] = 0
+            
 #        print set(ua).intersection(set(turn['UA']))
 #        print set(ua).union(set(turn['UA']))
 #        print float(len(set(ua).intersection(set(turn['UA']))))/len(set(ua).union(set(turn['UA'])))

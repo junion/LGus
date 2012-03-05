@@ -51,6 +51,12 @@ class MultinomialSampler(object):
         for i, cumprob in enumerate(self._cumprobs):
             if x < cumprob:
                 return self._values[i]
+        else:
+            print 'sampling out of index'
+            print self._values
+            if len(self._values) > 0:
+                return self._values[-1]
+            return 'OOI'
         # for numerical reasons ...
         return self._values[i]
 
