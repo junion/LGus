@@ -25,6 +25,9 @@ class LetsgoTerminationModelLearner(object):
         num_fail = 0
         total_length_fail = 0
         fail_length_dict = {}
+        num_dialog = 0
+        total_length = 0
+        total_length_dict = {}
         
         training_file = open('tm_model\\termination_training','w')
         for d, dialog in enumerate(lc.Corpus(self.data,prep=self.prep).dialogs()):
@@ -45,8 +48,14 @@ class LetsgoTerminationModelLearner(object):
                     success_length_dict[len(dialog.turns)] += 1
                 except:
                     success_length_dict[len(dialog.turns)] = 1
-
             
+            num_dialog += 1
+            total_length += len(dialog.turns)
+            if len(dialog.turns) not in total_length_dict:
+                total_length_dict[len(dialog.turns)] = 1
+            else:  
+                total_length_dict[len(dialog.turns)] += 1
+                
 #            NIC = 0
 #            
 #            NICW = 0
@@ -178,6 +187,8 @@ class LetsgoTerminationModelLearner(object):
         print success_length_dict
         print 'Number of fails: %d, avg length: %f'%(num_fail,1.0*total_length_fail/num_fail)
         print fail_length_dict
+        print 'Number of dialogs: %d, avg length: %f'%(num_dialog,1.0*total_length/num_dialog)
+        print total_length_dict
 #        cmdline = './svm-predict test_feature ged.model output'
         cmdline = 'bin\\crf_learn.exe tm_model\\termination_template tm_model\\termination_training tm_model\\termination_model > tm_model\\training_log'
         Popen(cmdline,shell=True,stdout=PIPE).stdout
