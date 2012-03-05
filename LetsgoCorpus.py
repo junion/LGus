@@ -584,13 +584,13 @@ class Dialog:
             if line.find('object\tdiscontinued_route') > -1:
                 self.dialog_result = 'discontinued_route'
                 break
-            if line.find('[[dtmf_key]]') > -1 or line.find('  [dtmf_key]') > -1:
+            if line.find(':[dtmf_key]') > -1 or line.find('  [dtmf_key]') > -1:
                 self.dialog_result = 'dtmf_key'
                 break
-            if line.find('[[generic.help]]') > -1 or line.find('  [generic.help]') > -1:
+            if line.find(':[generic.help]') > -1 or line.find('  [generic.help]') > -1:
                 self.dialog_result = 'help'
                 break
-            if line.find('[[generic.startover]]') > -1 or line.find('  [generic.startover]') > -1:
+            if line.find(':[generic.startover]') > -1 or line.find('  [generic.startover]') > -1:
                 self.dialog_result = 'startover'
                 break
 #            if line.find('object\tquery.exact_travel_time') > -1:
@@ -679,7 +679,8 @@ class Dialog:
                     parsing_state = ''
                     
                 # user part
-                elif line.find(':last_level_touched') > -1 or line.find('New user input') > -1:
+                elif line.find(':last_level_touched "') > -1 or line.find(':total_num_parses "0"') > -1 or\
+                line.find('New user input') > -1:
                     parsing_state = 'expect_user_action'
                     try:
                         turn['UA'] = []
@@ -688,16 +689,20 @@ class Dialog:
     #                print turn
                 elif line.find('[h4_confidence]') > -1 or line.find('[confidence]') > -1:
                     turn['CS'] = float(line.split('=')[1])
-                elif line.find(':confidence') > -1:
-                    turn['CS'] = float(line.split('"')[1].split('"')[0])
+                elif line.find(':confidence "') > -1:
+#                    print float(line.split('"')[1])
+                    turn['CS'] = float(line.split('"')[1])
+#                    turn['CS'] = float(line.split('"')[1].split('"')[0])
     
                 # Place
                 elif line.find(':[1_singleplace.stop_name.uncovered_place]') > -1 or\
                 line.find(':[1_singleplace.stop_name.covered_place]') > -1:
                     if preceding_direction == 'dp':
-                        turn['UA'].append('I:dp:%s'%line.split('"')[1].split('"')[0])
+                        turn['UA'].append('I:dp:%s'%line.split('"')[1])
+#                        turn['UA'].append('I:dp:%s'%line.split('"')[1].split('"')[0])
                     elif preceding_direction == 'ap':
-                        turn['UA'].append('I:dp:%s'%line.split('"')[1].split('"')[0])
+                        turn['UA'].append('I:ap:%s'%line.split('"')[1])
+#                        turn['UA'].append('I:ap:%s'%line.split('"')[1].split('"')[0])
                     else:
                         self.dialog_result = 'ambiguous_place'
                         break
@@ -714,7 +719,8 @@ class Dialog:
                         break
                 elif line.find(':[2_departureplace.stop_name.uncovered_place]') > -1 or\
                 line.find(':[2_departureplace.stop_name.covered_place]') > -1:
-                    turn['UA'].append('I:dp:%s'%line.split('"')[1].split('"')[0])
+                    turn['UA'].append('I:dp:%s'%line.split('"')[1])
+#                    turn['UA'].append('I:dp:%s'%line.split('"')[1].split('"')[0])
                 elif line.find('  [2_departureplace.stop_name.uncovered_place]') > -1 or\
                 line.find('  [2_departureplace.stop_name.covered_place]') > -1 or\
                 line.find('  [[2_departureplace.stop_name.uncovered_place]]') > -1 or\
@@ -722,7 +728,8 @@ class Dialog:
                     turn['UA'].append('I:dp:%s'%line.split('=')[1].strip())
                 elif line.find(':[3_arrivalplace.stop_name.uncovered_place]') > -1 or\
                 line.find(':[3_arrivalplace.stop_name.covered_place]') > -1:
-                    turn['UA'].append('I:ap:%s'%line.split('"')[1].split('"')[0])
+                    turn['UA'].append('I:ap:%s'%line.split('"')[1])
+#                    turn['UA'].append('I:ap:%s'%line.split('"')[1].split('"')[0])
                 elif line.find('  [3_arrivalplace.stop_name.uncovered_place]') > -1 or\
                 line.find('  [3_arrivalplace.stop_name.covered_place]') > -1 or\
                 line.find('  [[3_arrivalplace.stop_name.uncovered_place]]') > -1 or\
@@ -733,7 +740,8 @@ class Dialog:
                 elif line.find(':[0_busnumber.route.0_uncovered_route]') > -1 or\
                 line.find(':[0_busnumber.route.0_discontinued_route]') > -1 or\
                 line.find(':[0_busnumber.route.0_covered_route]') > -1:
-                    turn['UA'].append('I:bn:%s'%line.split('"')[1].split('"')[0])
+                    turn['UA'].append('I:bn:%s'%line.split('"')[1])
+#                    turn['UA'].append('I:bn:%s'%line.split('"')[1].split('"')[0])
                 elif line.find('  [0_busnumber.route.0_uncovered_route]') > -1 or\
                 line.find('  [0_busnumber.route.0_discontinued_route]') > -1 or\
                 line.find('  [0_busnumber.route.0_covered_route]') > -1 or\
@@ -743,14 +751,20 @@ class Dialog:
                     turn['UA'].append('I:bn:%s'%line.split('=')[1].strip())
      
                 # Time
-                elif line.find(':timeperiod_spec') > -1:
-                    time = line.split('"')[1].split('"')[0]
+                elif line.find('Timeinfo: {c datetime.ParseDateTime') > -1:
+                    parsing_state = 'expect_travel_time_value'
+                elif parsing_state == 'expect_travel_time_value' and line.find(':timeperiod_spec') > -1:
+                    time = line.split('"')[1]
+#                    time = line.split('"')[1].split('"')[0]
                     if  time == 'now ':
                         turn['UA'].append('I:tt:%s'%time)
-                    else:
-                        parsing_state = 'expect_travel_time_value'
-                elif parsing_state == 'expect_travel_time_value' and line.find(':start_time') > -1:
-                    turn['UA'].append('I:tt:%s'%line.split('"')[1].split('"')[0])
+                        parsing_state = 'expect_user_action'
+#                    else:
+#                        parsing_state = 'expect_travel_time_value'
+#                elif parsing_state == 'expect_travel_time_value' and line.find(':start_time') > -1:
+#                    turn['UA'].append('I:tt:%s'%line.split('"')[1])
+                elif parsing_state == 'expect_travel_time_value' and line.find("dateTime: {'value': ") > -1:
+                    turn['UA'].append('I:tt:%s'%line.split("'")[3])
                 elif parsing_state == 'expect_user_action' and line.find('  [4_datetime]') > -1:
                     parsing_state = 'expect_travel_time_value'
                 elif parsing_state == 'expect_travel_time_value' and line.find('value') == 0:
