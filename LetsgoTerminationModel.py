@@ -8,6 +8,7 @@ import LetsgoCorpus as lc
 #import LetsgoSerializer as ls
 #import LetsgoVariables as lv
 #import LetsgoObservation as lo
+import numpy as np
 
 class LetsgoTerminationModelLearner(object):
     
@@ -189,6 +190,18 @@ class LetsgoTerminationModelLearner(object):
         print fail_length_dict
         print 'Number of dialogs: %d, avg length: %f'%(num_dialog,1.0*total_length/num_dialog)
         print total_length_dict
+        lengthList = []
+        for key in total_length_dict:
+            lengthList.extend([key]*total_length_dict[key])
+        print 'Dialog length average: %f (+/- %f)'%(np.average(lengthList),np.std(lengthList))
+        lengthList = []
+        for key in success_length_dict:
+            lengthList.extend([key]*success_length_dict[key])
+        print 'Success dialog length average: %f (+/- %f)'%(np.average(lengthList),np.std(lengthList))
+        lengthList = []
+        for key in fail_length_dict:
+            lengthList.extend([key]*fail_length_dict[key])
+        print 'Fail dialog average: %f (+/- %f)'%(np.average(lengthList),np.std(lengthList))
 #        cmdline = './svm-predict test_feature ged.model output'
         cmdline = 'bin\\crf_learn.exe tm_model\\termination_template tm_model\\termination_training tm_model\\termination_model > tm_model\\training_log'
         Popen(cmdline,shell=True,stdout=PIPE).stdout
