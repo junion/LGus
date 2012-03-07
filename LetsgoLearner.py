@@ -3,6 +3,7 @@ import pprint
 import Variables
 from Parameters import Factor
 from Models import SFR, JFR, CPT
+from Samplers import MultinomialSampler
 import Utils
 import LetsgoCorpus as lc
 import LetsgoSerializer as ls
@@ -290,8 +291,11 @@ class LetsgoIntentionModelLearner(object):
 
 
 class LetsgoErrorModelLearner(object):
-    def __init__(self,data,prep=False):
+    def __init__(self,data,method='Sampling',prep=False):
         self.data = data
+        self.prep = prep
+        self.method = method
+        self.learners = {'MAP':self.MAP_learn,'Sampling':self.Sampling_learn}
         self.cm_bn = {}
         self.cm_p = {}
         self.cm_tt = {}
@@ -305,9 +309,14 @@ class LetsgoErrorModelLearner(object):
                       'multi':[],'multi2':[],'multi3':[],'multi4':[],'multi5':[]} for c in range(self.q_class_max)]
         self.inco_cs = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],'correction':[],\
                       'multi':[],'multi2':[],'multi3':[],'multi4':[],'multi5':[]} for c in range(self.q_class_max)]
-        self.prep = prep
-    
+
     def learn(self,make_correction_model=False):
+        try:
+            self.learners[self.method](make_correction_model)
+        except:
+            'Does not support %s'%self.method
+    
+    def MAP_learn(self,make_correction_model=False):
         actCounts = {'bn':{'correct':0,'incorrect':0},
                              'dp':{'correct':0,'incorrect':0},
                              'ap':{'correct':0,'incorrect':0},
@@ -581,9 +590,251 @@ class LetsgoErrorModelLearner(object):
             ls.store_model(generate_cs_pd(self.inco_cs[c]),'_incorrect_confidence_score_prob_dist_class_%d.model'%c)
 
         pprint.pprint(actCounts)
-#        print generate_cs_pd(self.co_cs)['dp']
 
-#        print self.cm_bn
-#        print self.cm_p
-#        print self.cm_tt
-#        print self.cm_ua_template
+    def Sampling_learn(self,make_correction_model=False):
+        start_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+        
+        actCounts = {'bn':{'correct':0,'incorrect':0},
+                             'dp':{'correct':0,'incorrect':0},
+                             'ap':{'correct':0,'incorrect':0},
+                             'tt':{'correct':0,'incorrect':0},
+                             'yes':{'correct':0,'incorrect':0},
+                             'no':{'correct':0,'incorrect':0},
+                             'non-understanding':0}
+
+        Variables.clear_default_domain()
+        Variables.set_default_domain({'H_bn_t':lv.H_bn,'H_dp_t':lv.H_dp,'H_ap_t':lv.H_ap,\
+                                      'H_tt_t':lv.H_tt,'UA_tt':lv.UA,'H_bn_tt':lv.H_bn,\
+                                      'H_dp_tt':lv.H_dp,'H_ap_tt':lv.H_ap,'H_tt_tt':lv.H_tt,\
+                                      'H_bn_0':lv.H_bn,'H_dp_0':lv.H_dp,'H_ap_0':lv.H_ap,\
+                                      'H_tt_0':lv.H_tt})
+
+        fHt_UAtt_Htt = ls.load_model('_factor_Ht_UAtt_Htt.model')
+        
+               
+        for d, dialog in enumerate(lc.Corpus(self.data,prep=self.prep).dialogs()):
+            if len(dialog.turns) > 40:
+                continue
+            
+            print 'processing dialog #%d...'%d
+
+            avg_cs = reduce(operator.add,map(lambda x:x['CS'],dialog.turns))/len(dialog.turns)
+            if avg_cs > 0.7: c = 0
+            elif avg_cs > 0.5: c = 1
+            elif avg_cs > 0.3: c = 2
+            else: c = 3
+            
+            self.q_class[c] += 1
+            
+            cm_ua_template = self.cm_ua_template[c]
+            co_cs = self.co_cs[c]
+            inco_cs = self.inco_cs[c]
+        
+            Variables.change_variable('H_bn_0',lv.H_bn)
+            Variables.change_variable('H_dp_0',lv.H_dp)
+            Variables.change_variable('H_ap_0',lv.H_ap)
+            Variables.change_variable('H_tt_0',lv.H_tt)
+        
+            dialog_factors = []
+            for t, turn in enumerate(dialog.abs_turns):
+                tmp_fHt_UAtt_Htt = Factor(('H_bn_%s'%t,'H_dp_%s'%t,'H_ap_%s'%t,'H_tt_%s'%t,\
+                                           'UA_%s'%(t+1),'H_bn_%s'%(t+1),'H_dp_%s'%(t+1),\
+                                           'H_ap_%s'%(t+1),'H_tt_%s'%(t+1)),
+                        new_domain_variables={'UA_%s'%(t+1):lv.UA,'H_bn_%s'%(t+1):lv.H_bn,\
+                                              'H_dp_%s'%(t+1):lv.H_dp,'H_ap_%s'%(t+1):lv.H_ap,\
+                                              'H_tt_%s'%(t+1):lv.H_tt})
+                tmp_fHt_UAtt_Htt[:] = fHt_UAtt_Htt[:]
+        #            tmp_fHt_UAtt_Htt = fHt_UAtt_Htt.copy_rename({'H_bn_t':'H_bn_%s'%i,'H_dp_t':'H_dp_%s'%i,'H_ap_t':'H_ap_%s'%i,'H_tt_t':'H_tt_%s'%i,'UA_tt':'UA_%s'%(i+1),'H_bn_tt':'H_bn_%s'%(i+1),'H_dp_tt':'H_dp_%s'%(i+1),'H_ap_tt':'H_ap_%s'%(i+1),'H_tt_tt':'H_tt_%s'%(i+1)})            
+                tmp_fGbn_Ht_SAtt_UAtt = Factor(('H_bn_%s'%t,'H_dp_%s'%t,'H_ap_%s'%t,'H_tt_%s'%t,'UA_%s'%(t+1)))
+        #            tmp_fGbn_Ht_SAtt_UAtt = Factor(('H_bn_%s'%i,'H_dp_%s'%i,'H_ap_%s'%i,'H_tt_%s'%i,'UA_%s'%(i+1)),new_domain_variables={'UA_%s'%(i+1):UA,'H_bn_%s'%i:H_bn,'H_dp_%s'%i:H_dp,'H_ap_%s'%i:H_ap,'H_tt_%s'%i:H_tt})
+                try:
+                    tmp_fGbn_Ht_SAtt_UAtt[:] = \
+                    ls.load_model(('_factor_%s_%s.model'%(dialog.abs_goal['G_bn'],turn['SA'][0])).replace(':','-'))[:]
+                except:
+                    print ('Error:cannot find _factor_%s_%s.model'%(dialog.abs_goal['G_bn'],turn['SA'][0])).replace(':','-')
+                    exit()
+                tmp_fUAtt_Ott = Factor(('UA_%s'%(t+1),))
+                tmp_fUAtt_Ott[:] = lo.getObsFactor(turn,use_cs=True)[:]
+                factor = tmp_fHt_UAtt_Htt * tmp_fGbn_Ht_SAtt_UAtt * tmp_fUAtt_Ott
+                dialog_factors.append(factor.copy(copy_domain=True))
+            
+            jfr = JFR(SFR(dialog_factors))
+            jfr.condition({'H_bn_0':'x','H_dp_0':'x','H_ap_0':'x','H_tt_0':'x'})
+            jfr.calibrate()
+            
+            # Populate error table using inferred and observed actions
+            for t, turn in enumerate(dialog.turns):
+                obs_ua_template = []
+                for act in turn['UA']:
+                    if act.find('I:bn') == 0:# and max_ua.find('I:bn') > -1 and not dialog.goal['G_bn'] == '':
+                        if dialog.goal['G_bn'] == act.split(':')[-1]: 
+                            obs_ua_template.append('I:bn:o')
+                            actCounts['bn']['correct'] += 1
+                        else: 
+                            obs_ua_template.append('I:bn:x')
+                            actCounts['bn']['incorrect'] += 1
+                            if dialog.goal['G_bn'] not in self.cm_bn:
+                                self.cm_bn[dialog.goal['G_bn']] = {act.split(':')[-1]:1}
+                            elif act.split(':')[-1] not in self.cm_bn[dialog.goal['G_bn']]:
+                                self.cm_bn[dialog.goal['G_bn']][act.split(':')[-1]] = 1
+                            else:
+                                self.cm_bn[dialog.goal['G_bn']][act.split(':')[-1]] += 1
+                    elif act.find('I:dp') == 0:# and max_ua.find('I:dp') > -1 and not dialog.goal['G_dp'] == '':
+                        if dialog.goal['G_dp'] == act.split(':')[-1]: 
+                            obs_ua_template.append('I:dp:o')
+                            actCounts['dp']['correct'] += 1
+                        else: 
+                            obs_ua_template.append('I:dp:x')
+                            actCounts['dp']['incorrect'] += 1
+                            if dialog.goal['G_dp'] not in self.cm_p:
+                                self.cm_p[dialog.goal['G_dp']] = {act.split(':')[-1]:1}
+                            elif act.split(':')[-1] not in self.cm_p[dialog.goal['G_dp']]:
+                                self.cm_p[dialog.goal['G_dp']][act.split(':')[-1]] = 1
+                            else:
+                                self.cm_p[dialog.goal['G_dp']][act.split(':')[-1]] += 1
+                    elif act.find('I:ap') == 0:# and max_ua.find('I:ap') > -1 and not dialog.goal['G_ap'] == '':
+                        if dialog.goal['G_ap'] == act.split(':')[-1]: 
+                            obs_ua_template.append('I:ap:o')
+                            actCounts['ap']['correct'] += 1
+                        else: 
+                            obs_ua_template.append('I:ap:x')
+                            actCounts['ap']['incorrect'] += 1
+                            if dialog.goal['G_ap'] not in self.cm_p:
+                                self.cm_p[dialog.goal['G_ap']] = {act.split(':')[-1]:1}
+                            elif act.split(':')[-1] not in self.cm_p[dialog.goal['G_ap']]:
+                                self.cm_p[dialog.goal['G_ap']][act.split(':')[-1]] = 1
+                            else:
+                                self.cm_p[dialog.goal['G_ap']][act.split(':')[-1]] += 1
+                    elif act.find('I:tt') == 0:# and max_ua.find('I:tt') > -1 and not dialog.goal['G_tt'] == '':
+                        if dialog.goal['G_tt'] == act.split(':')[-1]: 
+                            obs_ua_template.append('I:tt:o')
+                            actCounts['tt']['correct'] += 1
+                        else: 
+                            obs_ua_template.append('I:tt:x')
+                            actCounts['tt']['incorrect'] += 1
+                            if dialog.goal['G_tt'] not in self.cm_tt:
+                                self.cm_tt[dialog.goal['G_tt']] = {act.split(':')[-1]:1}
+                            elif act.split(':')[-1] not in self.cm_tt[dialog.goal['G_tt']]:
+                                self.cm_tt[dialog.goal['G_tt']][act.split(':')[-1]] = 1
+                            else:
+                                self.cm_tt[dialog.goal['G_tt']][act.split(':')[-1]] += 1
+                    else:
+                        obs_ua_template.append(act)
+
+                if len(obs_ua_template) == 1:
+                    if len(obs_ua_template[0].split(':')) == 3:
+                        dummy,field,val = obs_ua_template[0].split(':')
+                        if val == 'o':
+                            co_cs[field].append(turn['CS'])
+                        else:
+                            inco_cs[field].append(turn['CS'])
+                    else:
+                        if obs_ua_template[0] == 'yes':
+                            if config.getboolean('UserSimulation','extendedSystemActionSet'):
+                                if dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
+                                    co_cs['yes'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
+                                    inco_cs['yes'].append(turn['CS'])
+                            else:
+                                if dialog.abs_turns[t]['SA'][0] == 'C:o':
+                                    co_cs['yes'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] == 'C:x':
+                                    inco_cs['yes'].append(turn['CS'])
+                        elif obs_ua_template[0] == 'no':
+                            if config.getboolean('UserSimulation','extendedSystemActionSet'):
+                                if dialog.abs_turns[t]['SA'][0] in ['C:bn:x','C:dp:x','C:ap:x','C:tt:x']:
+                                    co_cs['no'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] in ['C:bn:o','C:dp:o','C:ap:o','C:tt:o']:
+                                    inco_cs['no'].append(turn['CS'])
+                            else:
+                                if dialog.abs_turns[t]['SA'][0] == 'C:x':
+                                    co_cs['no'].append(turn['CS'])
+                                elif dialog.abs_turns[t]['SA'][0] == 'C:o':
+                                    inco_cs['no'].append(turn['CS'])
+                else:
+                    try:
+                        if make_correction_model and len(obs_ua_template) == 2 and 'no' in obs_ua_template:
+                            if ','.join(obs_ua_template).find(':x') > -1:
+                                inco_cs['correction'].append(turn['CS'])
+                            else:
+                                co_cs['correction'%len(obs_ua_template)].append(turn['CS'])
+                        else:    
+                            if ','.join(obs_ua_template).find(':x') > -1:
+                                inco_cs['multi%d'%len(obs_ua_template)].append(turn['CS'])
+                            else:
+                                co_cs['multi%d'%len(obs_ua_template)].append(turn['CS'])
+                    except:
+                        print len(obs_ua_template)
+
+                rf = jfr.factors_containing_variable('UA_%s'%(t+1))
+                ua_factor = rf[0].copy().marginalise_onto(['UA_%s'%(t+1)]).normalised()#[{'UA_1':inst['UA_tt']}]
+#                print ua_factor               
+                ua_pt = dict(zip(map(lambda x:x[0],ua_factor.insts()),ua_factor[:]))
+#                print ua_pt
+                for r in range(10):
+                    sampled_ua = MultinomialSampler(ua_pt).sample()
+#                    print sampled_ua
+                
+                    if sampled_ua not in cm_ua_template:
+                        cm_ua_template[sampled_ua] = {','.join(sorted(obs_ua_template)):1}
+                    elif ','.join(sorted(obs_ua_template)) not in cm_ua_template[sampled_ua]:
+                        cm_ua_template[sampled_ua][','.join(sorted(obs_ua_template))] = 1
+                    else:
+                        cm_ua_template[sampled_ua][','.join(sorted(obs_ua_template))] += 1
+                    
+        for c in range(self.q_class_max):
+            cm_ua_template = self.cm_ua_template[c]
+            co_cs = self.co_cs[c]
+            inco_cs = self.inco_cs[c]
+
+            co_cs['single'] = co_cs['bn'] + co_cs['dp'] + co_cs['ap'] +\
+             co_cs['tt'] + co_cs['yes'] + co_cs['no'] 
+            inco_cs['single'] = inco_cs['bn'] + inco_cs['dp'] + inco_cs['ap'] +\
+             inco_cs['tt'] + inco_cs['yes'] + inco_cs['no'] 
+    
+            for n in range(2,6,1):
+                co_cs['multi'] += co_cs['multi%d'%n]
+                inco_cs['multi'] += inco_cs['multi%d'%n]
+    
+            co_cs['total'] = co_cs['single'] + co_cs['multi']
+            inco_cs['total'] = inco_cs['single'] + inco_cs['multi']
+             
+        print 'Writing parameters...'
+        def make_dist(ft):
+            tot = sum(ft.values())
+            for k, v in ft.items(): ft[k] = float(v)/tot
+            return ft
+
+        def make_dists(cm):
+            for key in cm.keys():
+                cm[key] = make_dist(cm[key])
+            return cm
+
+        def generate_cs_pd(cs):
+            cs_pd = {}
+            for key in cs.keys():
+                cs_pd[key] = {}
+                for val in cs[key]:
+                    try:
+                        cs_pd[key][int(val/0.01)/float(100)] += 1
+                    except:
+                        cs_pd[key][int(val/0.01)/float(100)] = 1
+            return make_dists(cs_pd)
+            
+        ls.store_model(make_dists(self.cm_bn),'_confusion_matrix_bn.model')
+        ls.store_model(make_dists(self.cm_p),'_confusion_matrix_p.model')
+        ls.store_model(make_dists(self.cm_tt),'_confusion_matrix_tt.model')
+        ls.store_model(make_dist(self.q_class),'_quality_class.model')
+        for c in range(self.q_class_max): 
+            ls.store_model(make_dists(self.cm_ua_template[c]),'_confusion_matrix_ua_class_%d.model'%c)
+            ls.store_model(self.co_cs[c],'_correct_confidence_score_class_%d.model'%c)
+            ls.store_model(self.inco_cs[c],'_incorrect_confidence_score_class_%d.model'%c)
+            ls.store_model(generate_cs_pd(self.co_cs[c]),'_correct_confidence_score_prob_dist_class_%d.model'%c)
+            ls.store_model(generate_cs_pd(self.inco_cs[c]),'_incorrect_confidence_score_prob_dist_class_%d.model'%c)
+
+        pprint.pprint(actCounts)
+
+        end_time = time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime())
+       
+        print 'Start time: %s'%start_time
+        print 'End time: %s'%end_time

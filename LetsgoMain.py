@@ -25,7 +25,7 @@ def intention_model_training():
 def error_model_training():
     import LetsgoLearner as ll
 
-    err_learner = ll.LetsgoErrorModelLearner('D:/Data/training',prep=True)
+    err_learner = ll.LetsgoErrorModelLearner('D:/Data/training',method='Sampling',prep=True)
     err_learner.learn()
 
 def batch_simulation():
@@ -549,9 +549,9 @@ def sim_eval():
     import LetsgoSimEval as lse
 
     evaluator = lse.LetsgoSimulationEvaluator('D:/Data/training',prep=True)
-#    evaluator.simulation()
-#    evaluator.simulated_stat()
-#    evaluator.show_conf_score()
+    evaluator.simulation()
+    evaluator.simulated_stat()
+    evaluator.show_conf_score()
     evaluator.evaluate_fscore()
     evaluator.evaluate_fscore(False)
         
