@@ -55,12 +55,12 @@ class LetsgoSimulationEvaluator(object):
             self.inco_cs.append(ls.load_model('_incorrect_confidence_score_prob_dist_class_%d.model'%c))
         self.q_class_sampler = MultinomialSampler(ls.load_model('_quality_class.model'))
 
-    def get_conf_score_figure(self,ax,model='_Simulated_Corpus.model',infer=True,field='total'):
+    def get_conf_score_figure(self,ax,infer=True,field='total'):
         import numpy as np
         from copy import deepcopy
         import statistics 
   
-        
+        model = self.second_model
         co_cs_collection,inco_cs_collection = self.reference_conf_score()
         total_co_cs = None
         total_inco_cs = None
@@ -77,7 +77,7 @@ class LetsgoSimulationEvaluator(object):
                     total_inco_cs[k].extend(inco_cs[k])
         
         if infer:
-            infer_co_cs_collection,infer_inco_cs_collection = self.simulated_conf_score(model)
+            infer_co_cs_collection,infer_inco_cs_collection = self.simulated_conf_score()
             infer_total_co_cs = None
             infer_total_inco_cs = None
             for c in range(self.q_class_max):
@@ -182,7 +182,7 @@ class LetsgoSimulationEvaluator(object):
         posRefNumOfActs = 0
         posInferNumOfActs = 0
         
-        simDialogs = ls.load_model('_Simulated_Corpus.model')
+        simDialogs = ls.load_model(self.second_model,path='.')
         # loop over dialogs
         for d, dialog in enumerate(lc.Corpus(self.data,prep=self.prep,model=self.model).dialogs()):
 
@@ -519,13 +519,13 @@ class LetsgoSimulationEvaluator(object):
 #            except (ValueError,RuntimeError) as e:
 #                print e
 
-    def simulated_conf_score(self,model='_Simulated_Corpus.model'):
+    def simulated_conf_score(self):
         co_cs_collection = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],'correction':[],\
                       'multi':[],'multi2':[],'multi3':[],'multi4':[],'multi5':[]} for c in range(self.q_class_max)]
         inco_cs_collection = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],'correction':[],\
                       'multi':[],'multi2':[],'multi3':[],'multi4':[],'multi5':[]} for c in range(self.q_class_max)]
 
-        simDialogs = ls.load_model(model)
+        simDialogs = ls.load_model(self.second_model,path='.')
         # loop over dialogs
         for d, dialog in enumerate(simDialogs):
             if len(dialog.turns) > 40:
@@ -654,7 +654,7 @@ class LetsgoSimulationEvaluator(object):
 
     def simulated_stat(self):
         
-        simDialogs = ls.load_model('_Simulated_Corpus.model')
+        simDialogs = ls.load_model(self.second_model,path='.')
         # loop over dialogs
         for d, dialog in enumerate(simDialogs):
 #            if d > 30:
@@ -971,7 +971,7 @@ class LetsgoSimulationEvaluator(object):
             simDialogs.append(simDialog)
         print 'nonu2other: %d'%nonu2other
         pprint.pprint(actCounts)
-        ls.store_model(simDialogs,'_Simulated_Corpus.model')        
+        ls.store_model(simDialogs,self.second_model,path='.')        
 
     def reference_conf_score(self):
         co_cs_collection = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],'correction':[],\
