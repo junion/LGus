@@ -549,11 +549,11 @@ def sim_eval():
     import LetsgoSimEval as lse
 
     evaluator = lse.LetsgoSimulationEvaluator('D:/Data/training',prep=True)
-    evaluator.simulation()
-    evaluator.simulated_stat()
+#    evaluator.simulation()
+#    evaluator.simulated_stat()
     evaluator.show_conf_score()
-    evaluator.evaluate_fscore()
-    evaluator.evaluate_fscore(False)
+#    evaluator.evaluate_fscore()
+#    evaluator.evaluate_fscore(False)
         
 def termination_model_training():
     import LetsgoTerminationModel as lt
@@ -577,12 +577,109 @@ def test_sim_eval():
     import LetsgoSimEval as lse
 
     evaluator = lse.LetsgoSimulationEvaluator('D:/Data/test',prep=True,model='model/_Test_Corpus.model')
-    evaluator.simulation()
-    evaluator.simulated_stat()
+#    evaluator.simulation()
+#    evaluator.simulated_stat()
     evaluator.show_conf_score()
-    evaluator.evaluate_fscore()
-    evaluator.evaluate_fscore(False)
+#    evaluator.evaluate_fscore()
+#    evaluator.evaluate_fscore(False)
+
+#def show_paired_conf_score ():
+#    import LetsgoSimEval as lse
+#    import matplotlib.pyplot as p
+#
+#    fig = p.figure(figsize=(8,6*1.3))
+#
+#    ax = fig.add_subplot(2,1,1)
+#    evaluator = lse.LetsgoSimulationEvaluator('D:/Data/training',prep=True)
+#    evaluator.get_conf_score_figure(ax,field='total')
+#    ax.legend(loc='upper left')
+#    ax.set_ylabel('Density')
+#    p.grid(True)
+#
+#    ax2 = fig.add_subplot(2,1,2)
+#    evaluator = lse.LetsgoSimulationEvaluator('D:/Data/test',prep=True,model='model/_Test_Corpus.model')
+#    evaluator.get_conf_score_figure(ax2,'_Simulated_Test_Corpus.model',field='total')
+#    ax2.set_xlabel('Confidence Score')
+#    ax2.set_ylabel('Density')
+#    ax2.legend(loc='upper left')
+#    p.grid(True)
+#
+#    p.savefig('img/cs.png')
+#    p.clf()
+
+def show_paired_conf_score ():
+    import LetsgoSimEval as lse
+    import matplotlib.pyplot as p
+    import matplotlib.font_manager as fm
     
+#    evaluator = lse.LetsgoSimulationEvaluator('D:/Data/training',prep=True)
+#    fig = p.figure(figsize=(13,6*1.3))
+#    ax = fig.add_subplot(2,3,1)
+#    evaluator.get_conf_score_figure(ax,field='yes')
+#    prop = fm.FontProperties(size=12)
+#    ax.legend(loc='upper left',prop=prop)    
+#    ax.set_ylabel('Density')
+#    ax.set_xlabel('Affirm')
+#    p.grid(True)
+#    ax2 = fig.add_subplot(2,3,2)
+#    evaluator.get_conf_score_figure(ax2,field='no')
+#    ax2.set_xlabel('Deny')
+#    p.grid(True)
+#    ax3 = fig.add_subplot(2,3,3)
+#    evaluator.get_conf_score_figure(ax3,field='bn')
+#    ax3.set_xlabel('Route')
+#    p.grid(True)
+#    ax4 = fig.add_subplot(2,3,4)
+#    evaluator.get_conf_score_figure(ax4,field='dp')
+#    ax4.set_ylabel('Density')
+#    ax4.set_xlabel('Source')
+#    p.grid(True)
+#    ax5 = fig.add_subplot(2,3,5)
+#    evaluator.get_conf_score_figure(ax5,field='ap')
+#    ax5.set_xlabel('Destination')
+#    p.grid(True)
+#    ax6 = fig.add_subplot(2,3,6)
+#    evaluator.get_conf_score_figure(ax6,field='tt')
+#    ax6.set_xlabel('Time')
+#    p.grid(True)
+#
+#    p.savefig('img/train_cs_concept.png')
+#    p.clf()
+#    
+    fig = p.figure(figsize=(13,6*1.3))
+    ax = fig.add_subplot(2,3,1)
+    evaluator = lse.LetsgoSimulationEvaluator('D:/Data/test',prep=True,model='model/_Test_Corpus.model')
+    evaluator.get_conf_score_figure(ax,'_Simulated_Test_Corpus.model',field='total')
+    prop = fm.FontProperties(size=12)
+    ax.legend(loc='upper left',prop=prop)    
+    ax.set_ylabel('Density')
+    ax.set_xlabel('Affirm')
+    p.grid(True)
+    ax2 = fig.add_subplot(2,3,2)
+    evaluator.get_conf_score_figure(ax2,'_Simulated_Test_Corpus.model',field='no')
+    ax2.set_xlabel('Deny')
+    p.grid(True)
+    ax3 = fig.add_subplot(2,3,3)
+    evaluator.get_conf_score_figure(ax3,'_Simulated_Test_Corpus.model',field='bn')
+    ax3.set_xlabel('Route')
+    p.grid(True)
+    ax4 = fig.add_subplot(2,3,4)
+    evaluator.get_conf_score_figure(ax4,'_Simulated_Test_Corpus.model',field='dp')
+    ax4.set_ylabel('Density')
+    ax4.set_xlabel('Source')
+    p.grid(True)
+    ax5 = fig.add_subplot(2,3,5)
+    evaluator.get_conf_score_figure(ax5,'_Simulated_Test_Corpus.model',field='ap')
+    ax5.set_xlabel('Destination')
+    p.grid(True)
+    ax6 = fig.add_subplot(2,3,6)
+    evaluator.get_conf_score_figure(ax6,'_Simulated_Test_Corpus.model',field='tt')
+    ax6.set_xlabel('Time')
+    p.grid(True)
+
+    p.savefig('img/test_cs_concept.png')
+    p.clf()
+
     
 if __name__ == "__main__":
 #    preprocess()
@@ -595,9 +692,9 @@ if __name__ == "__main__":
 
 #    test_preprocess()
 #    test_corpus_stats()
-    test_sim_eval()
+#    test_sim_eval()
 
-
+    show_paired_conf_score()
 
 
 #    show_obs_sbr()

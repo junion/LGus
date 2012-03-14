@@ -16,10 +16,11 @@ config = GetConfig()
 
 class LetsgoSimulationEvaluator(object):
     
-    def __init__(self,data=None,prep=False,model='model/_Corpus.model'):
+    def __init__(self,data=None,prep=False,model='model/_Corpus.model',second_model=None):
         self.data = data
         self.prep = prep
         self.model = model
+        self.second_model = second_model
         
         self.refActCounts = {'bn':{'correct':0,'incorrect':0},
                              'dp':{'correct':0,'incorrect':0},
@@ -53,6 +54,127 @@ class LetsgoSimulationEvaluator(object):
             self.co_cs.append(ls.load_model('_correct_confidence_score_prob_dist_class_%d.model'%c))
             self.inco_cs.append(ls.load_model('_incorrect_confidence_score_prob_dist_class_%d.model'%c))
         self.q_class_sampler = MultinomialSampler(ls.load_model('_quality_class.model'))
+
+    def get_conf_score_figure(self,ax,model='_Simulated_Corpus.model',infer=True,field='total'):
+        import numpy as np
+        from copy import deepcopy
+        import statistics 
+  
+        
+        co_cs_collection,inco_cs_collection = self.reference_conf_score()
+        total_co_cs = None
+        total_inco_cs = None
+        for c in range(self.q_class_max):
+            co_cs = co_cs_collection[c]
+            inco_cs = inco_cs_collection[c]
+            
+            if total_co_cs == None:
+                total_co_cs = deepcopy(co_cs)
+                total_inco_cs = deepcopy(inco_cs)
+            else:
+                for k in co_cs.keys():
+                    total_co_cs[k].extend(co_cs[k])
+                    total_inco_cs[k].extend(inco_cs[k])
+        
+        if infer:
+            infer_co_cs_collection,infer_inco_cs_collection = self.simulated_conf_score(model)
+            infer_total_co_cs = None
+            infer_total_inco_cs = None
+            for c in range(self.q_class_max):
+                co_cs = infer_co_cs_collection[c]
+                inco_cs = infer_inco_cs_collection[c]
+                
+                if infer_total_co_cs == None:
+                    infer_total_co_cs = deepcopy(co_cs)
+                    infer_total_inco_cs = deepcopy(inco_cs)
+                else:
+                    for k in co_cs.keys():
+                        infer_total_co_cs[k].extend(co_cs[k])
+                        infer_total_inco_cs[k].extend(inco_cs[k])
+        
+        title = {'multi':'Total of multiple actions',\
+                 'multi2': 'Two actions',\
+                 'multi3': 'Three actions',\
+                 'multi4': 'Four actions',\
+                 'multi5': 'Five actions',\
+                 'total': 'Global',\
+                 'yes': 'Affirm',\
+                 'no': 'Deny',\
+                 'bn': 'Bus number',\
+                 'dp': 'Departure place',\
+                 'ap': 'Arrival place',\
+                 'tt': 'Travel time',\
+                 'single': 'Total of single actions'
+                 }
+        for k in total_co_cs.keys():
+            if not k in [field]:#['yes','no','bn','dp','ap','tt','multi2','multi3','multi4','multi5']:
+                continue
+            print k
+            co = total_co_cs[k]
+            inco = total_inco_cs[k]
+
+            print 'length of correct: ',len(co)
+            print 'length of incorrect: ',len(inco)
+            
+            if len(co) == 0 or len(inco) == 0:
+                continue
+            
+            if len(co) == 1:
+                co *= 2
+            if len(inco) == 1:
+                inco *= 2
+            
+            if infer:
+                infer_co = infer_total_co_cs[k]
+                infer_inco = infer_total_inco_cs[k]
+
+                if len(infer_co) == 0 or len(infer_inco) == 0:
+                    continue
+
+                if len(infer_co) == 1:
+                    infer_co *= 2
+                if len(infer_inco) == 1:
+                    infer_inco *= 2
+            
+            
+                print 'length of correct: ',len(infer_co)
+                print 'length of incorrect: ',len(infer_inco)
+            
+        
+            x_co = np.arange(0,1.001,0.001)
+            x_inco = np.arange(0,1.001,0.001)
+            y_co = statistics.pdf(np.array(co),x=x_co,kernel='Gaussian')
+            y_inco = statistics.pdf(np.array(inco),x=x_inco,kernel='Gaussian')
+            
+            y_co += 1e-10
+            y_inco = y_inco*(float(len(inco))/len(co)) + 1e-10
+    
+            y_co_max = np.max(y_co)
+            print 'max of correct: ',y_co_max
+            y_inco_max = np.max(y_inco)
+            print 'max of incorrect: ',y_inco_max
+            y_max = max([y_co_max,y_inco_max])
+            print 'max of total: ',y_max         
+            ax.plot(x_co,y_co/y_max,'g-',alpha=0.75,linewidth=2,label='Real/Correct')
+            ax.plot(x_inco,y_inco/y_max,'r-',alpha=0.75,linewidth=2,label='Real/Inorrect')
+            print x_co
+            print x_inco
+            if infer:
+                infer_y_co = statistics.pdf(np.array(infer_co),x=x_co,kernel='Gaussian')
+                infer_y_inco = statistics.pdf(np.array(infer_inco),x=x_inco,kernel='Gaussian')
+                
+                infer_y_co += 1e-10
+                infer_y_inco = infer_y_inco*(float(len(infer_inco))/len(infer_co)) + 1e-10
+        
+                infer_y_co_max = np.max(infer_y_co)
+                print 'max of correct: ',infer_y_co_max
+                infer_y_inco_max = np.max(infer_y_inco)
+                print 'max of incorrect: ',infer_y_inco_max
+                infer_y_max = max([infer_y_co_max,infer_y_inco_max])
+                print 'max of total: ',infer_y_max         
+                ax.plot(x_co,infer_y_co/infer_y_max,'g-.',alpha=0.75,linewidth=2,label='Simulated/Correct')
+                ax.plot(x_inco,infer_y_inco/infer_y_max,'r-.',alpha=0.75,linewidth=2,label='Simulated/Inorrect')
+
 
     def evaluate_fscore(self,abstract=True):
         refNumOfActs = 0
@@ -397,13 +519,13 @@ class LetsgoSimulationEvaluator(object):
 #            except (ValueError,RuntimeError) as e:
 #                print e
 
-    def simulated_conf_score(self):
+    def simulated_conf_score(self,model='_Simulated_Corpus.model'):
         co_cs_collection = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],'correction':[],\
                       'multi':[],'multi2':[],'multi3':[],'multi4':[],'multi5':[]} for c in range(self.q_class_max)]
         inco_cs_collection = [{'total':[],'single':[],'bn':[],'dp':[],'ap':[],'tt':[],'yes':[],'no':[],'correction':[],\
                       'multi':[],'multi2':[],'multi3':[],'multi4':[],'multi5':[]} for c in range(self.q_class_max)]
 
-        simDialogs = ls.load_model('_Simulated_Corpus.model')
+        simDialogs = ls.load_model(model)
         # loop over dialogs
         for d, dialog in enumerate(simDialogs):
             if len(dialog.turns) > 40:
